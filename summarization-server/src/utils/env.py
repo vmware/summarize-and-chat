@@ -80,7 +80,7 @@ class environment:
     def get_llm_values(self, refresh=False):
         llm = self.get_config('llm', refresh=refresh)
         if llm:
-            return self.get_children(llm, ["LLM_API", "AUTH_KEY", "QA_MODEL", "SUMMARIZE_MODEL", "AUDIO_API", "EMBEDDING_MODEL", "VECTOR_DIM","CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "TOP_K","QA_MODEL_MAX_TOKEN_LIMIT","SUMMARIZE_MODEL_MAX_TOKEN_LIMIT","AUDIO_API_MAX_TOKEN_LIMIT","EMBEDDING_MODEL_MAX_TOKEN_LIMIT","MAX_NUM_TOKENS","MAX_COMPLETION", "LLM_BATCH_SIZE"])
+            return self.get_children(llm, ["LLM_API", "AUTH_KEY", "QA_MODEL", "QA_MODEL_MAX_TOKEN_LIMIT", "SUMMARIZE_MODEL", "EMBEDDING_MODEL", "VECTOR_DIM", "MAX_COMPLETION", "CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "TOP_K", "LLM_BATCH_SIZE", "AUDIO_API"])
         
     def get_db_values(self, refresh=False):
         db = self.get_config('database', refresh=refresh)

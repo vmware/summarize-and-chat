@@ -1,15 +1,13 @@
 okta:
   OKTA_AUTH_URL: OKTA_AUTH_URL # YOUR OKTA AUTH URL
   OKTA_CLIENT_ID: OKTA_CLIENT_ID # YOUR OKTA CLIENT ID
-  OKTA_CLIENT_SECRET: OKTA_CLIENT_SECRET # YOUR OKTA CLIENT SECRET
   OKTA_ENDPOINTS: [ 'admin' ]
 llm:
-  LLM_API: LLM_API # YourOpenAI-compatible inference API
-  AUTH_KEY: AUTH_KEY
+  LLM_API: LLM_API # OpenAI-compatible inference API
+  AUTH_KEY: AUTH_KEY # API key
   QA_MODEL: "mistralai/Mixtral-8x7B-Instruct-v0.1" # QA model name
   QA_MODEL_MAX_TOKEN_LIMIT: 30000 # Max token limit
   SUMMARIZE_MODEL: "meta-llama/Meta-Llama-3-70B-Instruc" # default summarization model
-  SUMMARIZE_MODEL_MAX_TOKEN_LIMIT: 6500 # Max token limit
   EMBEDDING_MODEL: "Salesforce/SFR-Embedding-Mistral" # Embedding model
   VECTOR_DIM: 4096 # Embedding model dimention 
   MAX_COMPLETION: 700

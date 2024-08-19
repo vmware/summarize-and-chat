@@ -13,6 +13,10 @@ import datetime, time
 from src.db.pgvector_db import pgvectorDB
 from src.model.data_model import Vtt
 from src.utils.email import notify_vtt_finished
+from src.db.database import DocumentDB
+
+db_config = _env.get_db_values()
+documentDB = DocumentDB(db_config)
 
 router = APIRouter(
     prefix="/api/v1"
@@ -28,12 +32,11 @@ async def audio_task_notification(data: Vtt, background_tasks:BackgroundTasks):
     logger.info(f'--receive notification--{data.user}---{data.audio}')
     # email notify
     notify_vtt_finished(data.user, os.path.basename(data.audio))
-    # waite vtt file write file system
+    # wait fo saving vtt file to the system
     time.sleep(30)
-    # create index
-    # TODO: doc_id?
-    background_tasks.add_task(pgvectorDB.vector_index, os.path.basename(data.vtt_path), data.user)
-
+    # add to documents table and create index
+    doc_id = await documentDB.add_document(str(data.vtt_path), data.user)
+    background_tasks.add_task(pgvectorDB.vector_index, str(data.vtt_path), data.user, doc_id)
 
 @router.get("/convert-process")
 async def get_process(audio: str, token=Depends(verify_token)):

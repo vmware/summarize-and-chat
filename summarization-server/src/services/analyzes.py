@@ -28,7 +28,7 @@ def meta_info(filename, user):
 
 
 async def summarize_doc(docs, chunk_size, chunk_overlap, model_name, temperature, user):
-    max_token = llm_config["SUMMARIZE_MODEL_MAX_TOKEN_LIMIT"]
+    max_token = llm_config["SUMMARIZE_MODEL_MAX_CHUNK_SIZE"]
     modelDict = _env.get_model_by_name(model_name)
     max_token = int(modelDict.get("max_token"))
     

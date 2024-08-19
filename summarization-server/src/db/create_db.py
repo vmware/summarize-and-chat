@@ -22,37 +22,46 @@ def get_connection(pg_config):
 
 def create_db():
     pg_config = _env.get_pgvector_values()
+    try:
+        conn = get_connection(pg_config)
+        conn.autocommit = True
 
-    conn = get_connection(pg_config)
-    conn.autocommit = True
+        # cursor = conn.cursor()
+        # cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+        # cursor.close()
 
-    # cursor = conn.cursor()
-    # cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
-    # cursor.close()
+        cursor = conn.cursor()
 
-    cursor = conn.cursor()
-
-    cursor.execute("""CREATE TABLE IF NOT EXISTS documents(
-        id SERIAL PRIMARY KEY,
-        email VARCHAR (100)  NOT NULL,
-        file VARCHAR (256) NOT NULL,
-        status VARCHAR (20) NOT NULL,
-        questions TEXT [],
-        created_at TIMESTAMP default now(),
-        UNIQUE (email, file));
-        """)
-    cursor.close()
-    
-    cursor.execute("""CREATE TABLE IF NOT EXISTS chat_doc(
-        id SERIAL PRIMARY KEY,
-        email VARCHAR (100)  NOT NULL,
-        file VARCHAR (256) NOT NULL,
-        user_query text NOT NULL,
-        assistant_answer text,
-        create_time TIMESTAMP default now());
-        """)
-    cursor.close()
-    print("Database setup completed.")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS documents(
+            id SERIAL PRIMARY KEY,
+            email VARCHAR (100)  NOT NULL,
+            file VARCHAR (256) NOT NULL,
+            status VARCHAR (20) NOT NULL,
+            questions TEXT [],
+            created_at TIMESTAMP default now(),
+            UNIQUE (email, file));
+            """)
+        cursor.close()
+        
+        cursor.execute("""CREATE TABLE IF NOT EXISTS chat_doc(
+            id SERIAL PRIMARY KEY,
+            email VARCHAR (100)  NOT NULL,
+            file VARCHAR (256) NOT NULL,
+            user_query text NOT NULL,
+            assistant_answer text,
+            create_time TIMESTAMP default now());
+            """)
+        cursor.close()
+        print("Database setup completed.")
+    except Exception as e:
+        # Catch any other unexpected exceptions
+        print(f"Unexpected error: {e}")
+    finally:
+        # Close the cursor and connection
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
             
 if __name__ == '__main__':
     create_db()

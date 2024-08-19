@@ -25,7 +25,7 @@ from src.services.agent import route_query
 
 server_config = _env.get_server_values()
 llm_config = _env.get_llm_values()
-pg_config = _env.get_pgvector_values()
+pg_config = _env.get_db_values()
 
 chatDB = ChatDB(pg_config)
 

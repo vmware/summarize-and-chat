@@ -20,7 +20,7 @@ from src.config import logger
 from src.db.database import DocumentDB, ChatDB
 
 server_config = _env.get_server_values()
-pg_config = _env.get_pgvector_values()
+pg_config = _env.get_db_values()
 documentDB = DocumentDB(pg_config)
 chatDB = ChatDB(pg_config)
 
@@ -43,10 +43,10 @@ async def upload(doc: UploadFile,
     email = user.username
     doc_path = await save_file(doc, chunk, total_chunks, email)
     name = secure_filename(doc.filename)
-    doc_id = await documentDB.add_document(str(doc_path), email)
     
     # if doc upload finished, init doc index and run in background
     if doc_path.exists() and not validate_audio(name):
+        doc_id = await documentDB.add_document(str(doc_path), email)
         background_tasks.add_task(pgvectorDB.vector_index, str(doc_path), email, doc_id)
         
     # if audio file upload finished,start convert task auto

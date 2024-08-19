@@ -1,4 +1,4 @@
-fastapi==0.99.1
+fastapi==0.109.1
 PyYAML==6.0.1
 transformers==4.34.1
 sentencepiece==0.1.99

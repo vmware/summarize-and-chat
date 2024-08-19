@@ -1,0 +1,13 @@
+/*
+Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
+@function determineZIndex($map, $key) {
+    $z-index: map-get($map, $key);
+    @if not $z-index {
+        @error "z-index key is missing or changed.";
+    }
+
+    @return $z-index;
+}

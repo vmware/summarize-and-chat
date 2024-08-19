@@ -1,0 +1,120 @@
+/*
+Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+
+::ng-deep .clr-vertical-nav .nav-btn {
+  outline: none !important;
+}
+
+.customer-label {
+  margin-top: 1.5rem;
+  margin-bottom: -0.8rem;
+}
+
+.configForm {
+  padding-top: 0;
+}
+
+.sum_collspsed {
+  order: 0 !important;
+  width: 24rem;
+  min-height: 100%;
+  border-left: 1px solid #ccc;
+  margin-bottom: 1.5rem;
+  color: #606060;
+  height: calc(100% - 77px);
+  // background: #f3f4f8 !important;
+  ::ng-deep.nav-trigger + .nav-content {
+    padding: 0px !important;
+    border-top: 0;
+  }
+  ::ng-deep .nav-trigger {
+    outline: none;
+  }
+  .sum_content {
+    .sum_prefix {
+      width: 48px;
+      height: 100%;
+    }
+    .sum_config {
+      padding: 0 0.8rem 0 0.8rem;
+      .sum_tit {
+        margin-top: 0;
+        font-weight: 500;
+        margin-left: 1rem;
+      }
+      .sum_group {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-top: 2rem;
+        .sum_label {
+          width: 30%;
+          display: flex;
+          // justify-content: space-between;
+          align-items: center;
+          ::ng-deep.signpost button {
+            border: none;
+            outline: none;
+          }
+        }
+        .sum_detail {
+          display: flex;
+          margin-left: 5%;
+          justify-content: flex-start;
+          align-items: center;
+          width: 80%;
+        }
+        .sum_detail textarea {
+          color: #606060;
+          font-size: 16px;
+          font-weight: 400;
+          line-height: 1.5;
+        }
+        ::ng-deep .clr-form-control {
+          margin-top: 0px;
+          max-width: 70%;
+          width: 70%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          .clr-control-label {
+            display: none;
+          }
+        }
+        .sum_input_val {
+          outline: none;
+          border-style: solid;
+          border: 0.05rem solid #000;
+          width: 25%;
+          border-radius: 5px;
+          line-height: 24px;
+          height: 24px;
+          color: #606060;
+        }
+      }
+      .sum_gurop_align {
+        align-items: flex-start;
+      }
+    }
+    .bottomFix {
+      width: 100%;
+      height: 3rem;
+    }
+  }
+
+  ::ng-deep .signpost-content-body p {
+    margin-top: 0rem;
+  }
+
+  clr-signpost {
+    margin-left: 2rem;
+  }
+}
+.err-color {
+  color: #e02200;
+}
+::ng-deep :root {
+  --clr-forms-range-track-color: #fff;
+}

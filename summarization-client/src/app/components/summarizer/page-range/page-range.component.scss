@@ -1,0 +1,65 @@
+/*
+Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+.pangRangeWrap {
+  display: flex;
+  align-items: center;
+  width: 472px;
+}
+
+.pageRangeForm {
+  display: flex;
+  align-items: center;
+}
+
+.titleLable {
+  color: #666;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.groupArea {
+  width: 15%;
+  max-width: 15%;
+  margin-left: 0.5rem;
+
+  input {
+    outline: none;
+    border-style: solid;
+    // border: 0.05rem solid #000;
+    border: 1px solid #d9d9d9;
+    width: 100%;
+    border-radius: 5px;
+    line-height: 24px;
+    height: 24px;
+    color: #606060;
+  }
+
+  input:hover {
+    border-color: #40a9ff;
+    border-right-width: 1px;
+  }
+
+  input:focus {
+    border-color: #40a9ff;
+    box-shadow: rgba(24, 144, 255, 0.12);
+    border-right-width: 1px;
+    outline: 0;
+  }
+}
+
+.line {
+  height: 1px;
+  width: 6px;
+  background: #8c8c8c;
+  margin: 0 5px;
+}
+
+.err-color {
+  color: red;
+}
+
+.border-tip {
+  border-color: red !important;
+}

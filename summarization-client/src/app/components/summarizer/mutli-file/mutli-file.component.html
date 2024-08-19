@@ -1,0 +1,128 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="main-wrapper">
+  <div class="chat-header">
+    <div class="headerWrap">
+      <div class="headerLeft">
+        <div>
+          <h4 style="font-weight: 500; display: inline-block">Summarizer</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chat-main">
+    <div class="chat-mainBox" style="max-width: 100%">
+      <div
+        id="outputDiv"
+        class="preview-file ul-class"
+        style="background-color: white; word-wrap: break-word"
+      >
+        <div
+          *ngIf="!showAIloading"
+          [innerHTML]="outputSummary"
+          class="textarea-cls"
+          style="background-color: white"
+        ></div>
+        <div
+          *ngIf="showAIloading"
+          class="textarea-cls"
+          style="background-color: white"
+        >
+          <span class="ai-loading">Summarizing</span>
+        </div>
+      </div>
+      <div class="bottom">
+        <div *ngIf="files?.length > 1">
+          <div
+            class="clr-row displayWidth"
+            *ngFor="let file of files; let i = index"
+          >
+            <ng-container *ngIf="i < num">
+              <div class="file-icon clr-col-1">
+                <cds-icon
+                  shape="file"
+                  style="width: 1.5rem; height: 1.5rem"
+                ></cds-icon>
+              </div>
+              <div
+                class="clr-col-6"
+                style="margin-left: 0.5rem; margin-top: 0.2rem"
+              >
+                <div
+                  class="text-left"
+                  style="color: #a4a4a4"
+                  class="fileName"
+                  title="{{ file }}"
+                >
+                  {{ file }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div
+            class="show-more"
+            *ngIf="files?.length > 2 && !more && num == 2"
+            (click)="showMore()"
+          >
+            ...Show more
+          </div>
+          <div class="show-more" *ngIf="more" (click)="hide()">Hide</div>
+        </div>
+        <div style="margin-right: -0.5rem">
+          <button
+            *ngIf="showSummarize"
+            (click)="summarizeClick()"
+            class="btn btn-success summarizeBtn"
+            style="cursor: pointer; width: 180px"
+            [clrLoading]="submitBtnState"
+          >
+            generate summary
+          </button>
+          <button *ngIf="!showSummarize" class="btn" disabled>
+            generate summary
+          </button>
+          <button *ngIf="showStop" (click)="stopAI()" class="btn btn-outline">
+            Stop Summarize
+          </button>
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-sm tooltip-top-left"
+            style="margin-right: 1rem"
+          >
+            <cds-icon
+              (click)="download()"
+              shape="download"
+              style="cursor: pointer"
+              size="md"
+              [solid]="true"
+            ></cds-icon
+            ><span class="tooltip-content">Download</span></a
+          >
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-xs tooltip-top-left"
+          >
+            <cds-icon
+              (click)="copy()"
+              shape="copy"
+              size="md"
+              style="cursor: pointer"
+            ></cds-icon>
+            <span class="tooltip-content">{{ copyTitle }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <app-summarize-params
+      [isShowFinal]="false"
+      [uploadLoading]="true"
+      [showPageRange]="false"
+      [showTimeRange]="false"
+      [showAlert]="showAlert"
+    ></app-summarize-params>
+  </div>
+</div>

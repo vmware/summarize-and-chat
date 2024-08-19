@@ -1,0 +1,171 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="modal">
+  <div class="modal-dialog" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button aria-label="Close" class="close" type="button">
+          <cds-icon (click)="cancel()" shape="close"></cds-icon>
+        </button>
+        <h3 class="modal-title">Edit File Metadata</h3>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form">
+          <div class="clr-row custom-row">
+            <label
+              style="font-size: 14px; margin-top: 0.3rem; margin-left: 0.2rem"
+              class="clr-control-label clr-col-12 clr-col-md-4"
+              >Date <span style="color: red">*</span></label
+            >
+            <div class="clr-input-wrapper clr-col-12 clr-col-md-6">
+              <input
+                style="width: 100%"
+                type="text"
+                placeholder="Your document content create date"
+                class="clr-input"
+                formControlName="date"
+                (change)="dateChange()"
+              />
+            </div>
+            <div
+              class="clr-col-12 clr-col-md-1"
+              *ngIf="form.get('date')?.invalid && form.get('date')?.touched"
+            >
+              <clr-tooltip>
+                <cds-icon
+                  clrTooltipTrigger
+                  shape="error-standard"
+                  style="color: red"
+                  class="valid-tooltip"
+                >
+                </cds-icon>
+                <clr-tooltip-content
+                  class="error-tooltip"
+                  clrPosition="top-right"
+                  clrSize="md"
+                  *clrIfOpen
+                >
+                  <span>This field is required</span>
+                </clr-tooltip-content>
+              </clr-tooltip>
+            </div>
+          </div>
+          <div
+            class="clr-row custom-row"
+            formArrayName="keyValues"
+            *ngFor="let keyValue of keyValues['controls']; let i = index"
+          >
+            <ng-container [formGroupName]="i">
+              <div class="clr-input-wrapper clr-col-12 clr-col-md-3">
+                <input
+                  style="width: 100%"
+                  type="text"
+                  placeholder="Input key"
+                  class="clr-input"
+                  formControlName="key"
+                  (change)="hasRepeatKey()"
+                />
+              </div>
+              <div class="clr-col-12 clr-col-md-1">
+                <clr-tooltip
+                  *ngIf="
+                    keyValue.get('key')?.invalid && keyValue.get('key')?.touched
+                  "
+                >
+                  <cds-icon
+                    clrTooltipTrigger
+                    shape="error-standard"
+                    style="color: red"
+                    class="valid-tooltip"
+                  >
+                  </cds-icon>
+                  <clr-tooltip-content
+                    class="error-tooltip"
+                    clrPosition="top-right"
+                    clrSize="md"
+                    *clrIfOpen
+                  >
+                    <span>Wrong format! Only supports letters.</span>
+                  </clr-tooltip-content>
+                </clr-tooltip>
+              </div>
+              <div class="clr-input-wrapper clr-col-12 clr-col-md-6">
+                <input
+                  style="width: 100%"
+                  type="text"
+                  placeholder="Input value"
+                  class="clr-input"
+                  formControlName="value"
+                />
+              </div>
+              <div class="clr-col-12 clr-col-md-1">
+                <cds-icon
+                  style="cursor: pointer"
+                  (click)="delete(i)"
+                  shape="trash"
+                ></cds-icon>
+              </div>
+            </ng-container>
+          </div>
+          <div class="clr-row custom-row">
+            <div style="display: flex; cursor: pointer" (click)="addNew()">
+              <cds-icon
+                style="margin: 0 0.3rem 0 0.8rem"
+                shape="plus-circle"
+                status="info"
+              ></cds-icon
+              ><label
+                style="color: #00608a; font-weight: 400"
+                class="clr-control-label"
+                >ADD NEW</label
+              >
+            </div>
+          </div>
+          <div class="clr-row custom-row" *ngIf="hasRepeatKey()">
+            <div
+              class="alert alert-danger"
+              role="alert"
+              style="width: 91%; margin-left: 0.7rem"
+            >
+              <div class="alert-items">
+                <div class="alert-item static">
+                  <div class="alert-icon-wrapper">
+                    <cds-icon
+                      class="alert-icon"
+                      shape="exclamation-circle"
+                    ></cds-icon>
+                  </div>
+                  <span class="alert-text">
+                    This key value is duplicated. Please check and re-enter it.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" (click)="cancel()">
+          Cancel
+        </button>
+        <button
+          *ngIf="disabledOk || hasRepeatKey() || form.status == 'INVALID'"
+          class="btn btn-primary"
+          type="button"
+          disabled
+        >
+          Ok
+        </button>
+        <button
+          *ngIf="!disabledOk && !hasRepeatKey() && form.status == 'VALID'"
+          class="btn btn-primary"
+          type="button"
+          (click)="ok()"
+        >
+          Ok
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop" aria-hidden="true"></div>

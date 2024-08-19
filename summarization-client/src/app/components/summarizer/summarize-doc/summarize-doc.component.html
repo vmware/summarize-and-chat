@@ -1,0 +1,532 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="main-wrapper">
+  <div class="chat-header">
+    <div class="headerWrap">
+      <div class="headerLeft">
+        <div>
+          <h4 style="font-weight: 500; display: inline-block">Summarizer</h4>
+          <clr-toggle-wrapper style="display: inline-block; margin-left: 1rem">
+            <input
+              type="checkbox"
+              clrToggle
+              name="switch"
+              required
+              value="switch"
+              [(ngModel)]="switch"
+              (ngModelChange)="switchChange()"
+            />
+            <label>Show Original and Summary Side by side</label>
+          </clr-toggle-wrapper>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div *ngIf="!switch" class="chat-main">
+    <div class="chat-mainBox" style="max-width: 100%">
+      <audio
+        style="display: inline-flex; width: auto; margin: 0.5rem 0 -0.5rem 0"
+        *ngIf="audioSrc"
+        id="media"
+        src="{{ audioSrc.url }}"
+        controls
+      ></audio>
+      <div
+        *ngIf="!outputSummary && file_type !== 'meeting'"
+        class="preview-file previewClass"
+        [ngClass]="docSrc ? 'docClass' : ''"
+        [ngClass]="showPPT ? 'not-tip' : ''"
+      >
+        <textarea
+          *ngIf="!pdfFilePath && !docSrc && !showPPT"
+          id="content-area"
+          class="textarea-cls"
+          placeholder="Start typing or paste your content here"
+          [(ngModel)]="content"
+          (ngModelChange)="textChange()"
+        ></textarea>
+        <div *ngIf="loading" class="loading">
+          <span class="spinner"> Loading... </span>
+        </div>
+        <div
+          class="textarea-holder"
+          *ngIf="!content && !pdfFilePath && !docSrc && !showPPT"
+        >
+          <div class="overlay" id="sample-text" (click)="clickSample()">
+            <cds-icon size="lg" shape="note"> </cds-icon>
+            <p>Sample Text</p>
+          </div>
+          <div class="overlay" id="paste-text" (click)="clickEdit()">
+            <cds-icon size="lg" shape="clipboard"> </cds-icon>
+            <p>Paste Text</p>
+          </div>
+        </div>
+        <div
+          #viewer
+          class="viewer"
+          style="width: 100%"
+          *ngIf="docSrc"
+          [ngStyle]="{ height: docSrc ? '98.9%' : '0' }"
+        >
+          <ngx-doc-viewer
+            *ngIf="docSrc"
+            [url]="docSrc"
+            viewer="mammoth"
+            style="background-color: white; padding: 1rem"
+          ></ngx-doc-viewer>
+        </div>
+        <div
+          *ngIf="pdfFilePath"
+          class="file-preview-container"
+          style="width: 100%; height: 98.4%"
+        >
+          <ngx-extended-pdf-viewer
+            *ngIf="pdfFileB64"
+            [base64Src]="pdfFileB64"
+            [useBrowserLocale]="true"
+            [handTool]="false"
+            [showHandToolButton]="true"
+          ></ngx-extended-pdf-viewer>
+          <ngx-extended-pdf-viewer
+            *ngIf="pdfFileUrl"
+            [src]="pdfFileUrl"
+            [useBrowserLocale]="true"
+          ></ngx-extended-pdf-viewer>
+        </div>
+        <div *ngIf="showPPT">
+          Currently, PowerPoint display is not supported.
+        </div>
+      </div>
+
+      <div
+        *ngIf="showVtt && !outputSummary && file_type == 'meeting'"
+        class="preview-file"
+      >
+        <textarea
+          id="content-area"
+          class="textarea-cls"
+          disabled
+          placeholder="Display meeting content, please upload the meeting file first."
+          [(ngModel)]="content"
+        ></textarea>
+        <div *ngIf="loading" class="loading">
+          <span class="spinner"> Loading... </span>
+        </div>
+      </div>
+      <div
+        *ngIf="!showVtt && !outputSummary && file_type == 'meeting'"
+        id="inputDiv"
+        class="preview-file ul-class"
+        style="background-color: white; word-wrap: break-word"
+      >
+        <div
+          *ngIf="!showInputLoading"
+          [innerHTML]="content"
+          class="textarea-cls"
+          style="background-color: white"
+        ></div>
+        <div
+          *ngIf="showInputLoading"
+          class="textarea-cls"
+          style="background-color: white"
+        >
+          {{ content }}
+          <clr-modal
+            [(clrModalOpen)]="showInputLoading"
+            [clrModalStaticBackdrop]="true"
+            [clrModalSize]="'lg'"
+          >
+            <h4 class="modal-title">loading Progress</h4>
+            <div class="modal-body">
+              <div class="modal-body">
+                <div class="chat_tips">
+                  The audio file is being converted to a vtt file, you can wait
+                  or close the window. You can view or download the converted vtt
+                  file in the My Files menu.
+                </div>
+                <clr-progress-bar
+                  style="margin-bottom: 0.3rem"
+                  [clrValue]="processObj.process"
+                  clrLabeled
+                ></clr-progress-bar>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="showInputLoading = false"
+              >
+                Ok
+              </button>
+            </div>
+          </clr-modal>
+        </div>
+      </div>
+      <div
+        *ngIf="outputSummary"
+        id="outputDiv"
+        class="preview-file ul-class"
+        style="background-color: white; word-wrap: break-word"
+      >
+        <div
+          *ngIf="!showAIloading"
+          [innerHTML]="outputSummary"
+          class="textarea-cls"
+          style="background-color: white"
+        ></div>
+        <div
+          *ngIf="showAIloading"
+          class="textarea-cls"
+          style="background-color: white"
+        >
+          <span class="ai-loading">Summarizing</span>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="uploadArea">
+          <app-upload-file
+            #upload
+            [progressFlag]="uploadObj.progressFlag"
+            [uploadProgress]="uploadObj.uploadProgress"
+            [fileType]="fileType"
+            [file]="file"
+            (outFile)="outFile($event)"
+            [loading]="loading"
+          >
+          </app-upload-file>
+        </div>
+        <div style="margin-right: -0.5rem">
+          <button
+            *ngIf="showSummarize"
+            (click)="summarizeClick()"
+            class="btn btn-success summarizeBtn"
+            style="cursor: pointer; width: 180px"
+            [clrLoading]="submitBtnState"
+          >
+            generate summary
+          </button>
+          <button *ngIf="!showSummarize" class="btn" disabled>
+            generate summary
+          </button>
+          <button *ngIf="showStop" (click)="stopAI()" class="btn btn-outline">
+            Stop Summarize
+          </button>
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-sm tooltip-top-left"
+            style="margin-right: 1rem"
+          >
+            <cds-icon
+              (click)="download()"
+              shape="download"
+              style="cursor: pointer"
+              size="md"
+              [solid]="true"
+            ></cds-icon
+            ><span class="tooltip-content">Download</span>
+          </a>
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-xs tooltip-top-left"
+            style="margin-right: 1rem"
+          >
+            <cds-icon
+              (click)="copy()"
+              shape="copy"
+              size="md"
+              style="cursor: pointer"
+            ></cds-icon>
+            <span class="tooltip-content">{{ copyTitle }}</span>
+          </a>
+
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-xs tooltip-top-left"
+          >
+            <cds-icon
+              (click)="clear()"
+              shape="trash"
+              size="md"
+              style="cursor: pointer"
+            ></cds-icon>
+            <span class="tooltip-content">Clear Summary</span>
+          </a>
+          <!-- <button style="cursor: pointer" (click)="clear()" class="btn btn-danger">
+            <cds-icon title="clear" size="md" shape="trash"></cds-icon> Clear
+            summary
+          </button> -->
+        </div>
+      </div>
+    </div>
+    <app-summarize-params
+      [uploadLoading]="loading"
+      [showPageRange]="showPageRange"
+      (pageRangeData)="getPageRangeData($event)"
+      (rangeStartData)="rangeStartData($event)"
+      (rangeEndData)="rangeEndData($event)"
+      [editTemplate]="editTemplate"
+      [showAlert]="showAlert"
+      [showTimeRange]="showTimeRange"
+      [template]="template"
+      [len]="len"
+      
+    ></app-summarize-params>
+  </div>
+
+  <div *ngIf="switch" class="chat-main">
+    <div class="chat-mainBox">
+      <audio
+        style="display: inline-flex; width: auto; margin: 0.5rem 0 -0.5rem 0"
+        *ngIf="audioSrc"
+        id="media"
+        src="{{ audioSrc.url }}"
+        controls
+      ></audio>
+      <div
+        *ngIf="file_type !== 'meeting'"
+        class="preview-file previewClass"
+        [ngClass]="docSrc ? 'docClass' : ''"
+        [ngClass]="showPPT ? 'not-tip' : ''"
+      >
+        <textarea
+          *ngIf="!pdfFilePath && !docSrc && !showPPT"
+          id="content-area"
+          class="textarea-cls"
+          placeholder="Start typing or paste your content here"
+          [(ngModel)]="content"
+          (ngModelChange)="textChange()"
+        ></textarea>
+        <div *ngIf="loading" class="loading">
+          <span class="spinner"> Loading... </span>
+        </div>
+        <div
+          class="textarea-holder"
+          *ngIf="!content && !pdfFilePath && !docSrc && !showPPT"
+        >
+          <div class="overlay" id="sample-text" (click)="clickSample()">
+            <cds-icon size="lg" shape="note"> </cds-icon>
+            <p>Sample Text</p>
+          </div>
+          <div class="overlay" id="paste-text" (click)="clickEdit()">
+            <cds-icon size="lg" shape="clipboard"> </cds-icon>
+            <p>Paste Text</p>
+          </div>
+        </div>
+        <div
+          #viewer
+          class="viewer"
+          style="width: 100%"
+          [ngStyle]="{ height: docSrc ? '98.9%' : '0' }"
+        >
+          <ngx-doc-viewer
+            *ngIf="docSrc"
+            [url]="docSrc"
+            viewer="mammoth"
+            style="background-color: white; overflow: auto; padding: 1rem"
+          ></ngx-doc-viewer>
+        </div>
+        <div
+          *ngIf="pdfFilePath"
+          class="file-preview-container"
+          style="width: 100%; height: 98.4%"
+        >
+          <ngx-extended-pdf-viewer
+            *ngIf="pdfFileB64"
+            [base64Src]="pdfFileB64"
+            [useBrowserLocale]="true"
+            [handTool]="false"
+            [showHandToolButton]="true"
+          ></ngx-extended-pdf-viewer>
+          <ngx-extended-pdf-viewer
+            *ngIf="pdfFileUrl"
+            [src]="pdfFileUrl"
+            [useBrowserLocale]="true"
+          ></ngx-extended-pdf-viewer>
+        </div>
+        <div *ngIf="showPPT">
+          Currently, PowerPoint display is not supported.
+        </div>
+      </div>
+
+      <div *ngIf="showVtt && file_type == 'meeting'" class="preview-file">
+        <textarea
+          id="content-area"
+          class="textarea-cls"
+          disabled
+          placeholder="Display meeting content, please upload the meeting file first."
+          [(ngModel)]="content"
+        ></textarea>
+        <div *ngIf="loading" class="loading">
+          <span class="spinner"> Loading... </span>
+        </div>
+      </div>
+      <div
+        *ngIf="!showVtt && file_type == 'meeting'"
+        id="inputDiv"
+        class="preview-file ul-class"
+        style="background-color: white; word-wrap: break-word"
+      >
+        <div
+          *ngIf="!showInputLoading"
+          [innerHTML]="content"
+          class="textarea-cls"
+          style="background-color: white"
+        ></div>
+        <div
+          *ngIf="showInputLoading"
+          class="textarea-cls"
+          style="background-color: white"
+        >
+          {{ content }}
+          <clr-modal
+            [clrModalOpen]="showInputLoading"
+            [clrModalStaticBackdrop]="true"
+            [clrModalSize]="'lg'"
+          >
+            <h4 class="modal-title">loading Progress</h4>
+            <div class="modal-body">
+              <div class="modal-body">
+                <div class="chat_tips">
+                  The audio file is being converted to a vtt file, you can wait
+                  or close the window. You can view or download the converted vtt
+                  file in the My Files menu.
+                </div>
+                <clr-progress-bar
+                  style="margin-bottom: 0.3rem"
+                  [clrValue]="processObj.process"
+                  clrLabeled
+                ></clr-progress-bar>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="showInputLoading = false"
+              >
+                Ok
+              </button>
+            </div>
+          </clr-modal>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="uploadArea">
+          <app-upload-file
+            #upload
+            [progressFlag]="uploadObj.progressFlag"
+            [uploadProgress]="uploadObj.uploadProgress"
+            [fileType]="fileType"
+            [file]="file"
+            (outFile)="outFile($event)"
+            [loading]="loading"
+          >
+          </app-upload-file>
+        </div>
+        <div style="margin-right: -0.5rem">
+          <button
+            *ngIf="showSummarize"
+            (click)="summarizeClick()"
+            class="btn btn-success summarizeBtn"
+            style="cursor: pointer; width: 180px"
+            [clrLoading]="submitBtnState"
+          >
+            generate summary
+          </button>
+          <button *ngIf="!showSummarize" class="btn" disabled>
+            generate summary
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="chat-mainBox">
+      <div
+        id="outputDiv"
+        class="preview-file ul-class"
+        style="background-color: white; word-wrap: break-word"
+      >
+        <div
+          *ngIf="!showAIloading"
+          [innerHTML]="outputSummary"
+          class="textarea-cls"
+          style="background-color: white"
+        ></div>
+        <div
+          *ngIf="showAIloading"
+          class="textarea-cls"
+          style="background-color: white"
+        >
+          <span class="ai-loading">Summarizing</span>
+        </div>
+      </div>
+      <div
+        class="right-bottom"
+        [ngClass]="
+          showStop
+            ? 'right-bottom-show'
+            : outputSummary && !showStop
+            ? 'right-bottom-end'
+            : 'right-bottom-space'
+        "
+      >
+        <button *ngIf="showStop" (click)="stopAI()" class="btn btn-outline">
+          Stop Summarize
+        </button>
+        <div>
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-sm tooltip-top-left"
+            style="margin-right: 1rem; margin-top: 0.5rem"
+          >
+            <cds-icon
+              (click)="download()"
+              shape="download"
+              style="cursor: pointer"
+              size="md"
+              [solid]="true"
+            ></cds-icon
+            ><span class="tooltip-content">Download</span></a
+          >
+          <a
+            *ngIf="outputSummary && !showStop"
+            role="tooltip"
+            aria-haspopup="true"
+            class="tooltip tooltip-xs tooltip-top-left"
+          >
+            <cds-icon
+              (click)="copy()"
+              shape="copy"
+              size="md"
+              style="cursor: pointer"
+            ></cds-icon>
+            <span class="tooltip-content">{{ copyTitle }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <app-summarize-params
+      [chatCollapsed]="true"
+      [uploadLoading]="loading"
+      [showPageRange]="showPageRange"
+      (pageRangeData)="getPageRangeData($event)"
+      (rangeStartData)="rangeStartData($event)"
+      (rangeEndData)="rangeEndData($event)"
+      [editTemplate]="editTemplate"
+      [showAlert]="showAlert"
+      [showTimeRange]="showTimeRange"
+      [template]="template"
+      [len]="len"
+    ></app-summarize-params>
+  </div>
+</div>

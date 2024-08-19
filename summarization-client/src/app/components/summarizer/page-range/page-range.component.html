@@ -1,0 +1,65 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="pangRangeWrap">
+  <form [formGroup]="pageRangeForm" class="pageRangeForm">
+    <div class="groupArea">
+      <input
+        type="number"
+        formControlName="startPage"
+        id="startPage"
+        (ngModelChange)="modelChange()"
+        [ngClass]="{
+          'border-tip':
+            pageRangeForm.get('startPage')?.invalid &&
+            pageRangeForm.get('startPage')?.touched
+        }"
+      />
+    </div>
+    <div class="line"></div>
+    <div class="groupArea">
+      <input
+        type="number"
+        formControlName="endPage"
+        id="endPage"
+        (ngModelChange)="modelChange()"
+        [ngClass]="{
+          'border-tip':
+            pageRangeForm.get('endPage')?.invalid &&
+            (pageRangeForm.get('endPage')?.dirty ||
+              pageRangeForm.get('endPage')?.touched)
+        }"
+      />
+    </div>
+    <div
+      role="tooltip"
+      aria-haspopup="true"
+      class="tooltip tooltip-bottom-left err-color"
+      *ngIf="
+        (pageRangeForm.get('startPage')?.invalid &&
+          pageRangeForm.get('startPage')?.touched) ||
+        (pageRangeForm.get('endPage')?.invalid &&
+          (pageRangeForm.get('endPage')?.dirty ||
+            pageRangeForm.get('endPage')?.touched)) ||pageRangeForm.errors?.['greaterThan']
+      "
+    >
+      <cds-icon shape="info-circle" size="24"></cds-icon>
+      <div class="tooltip-content">
+        <div *ngIf="pageRangeForm.get('startPage')?.errors?.['required']">
+          Start Page is required
+        </div>
+        <div *ngIf="pageRangeForm.get('startPage')?.errors?.['min']">
+          Start Page must be at least 1
+        </div>
+        <div *ngIf="pageRangeForm.get('endPage')?.errors?.['required']">
+          End Page is required
+        </div>
+        <div *ngIf="pageRangeForm.get('endPage')?.errors?.['min']">
+          End Page must be at least 1
+        </div>
+        <div *ngIf="pageRangeForm.errors?.['greaterThan']">
+          End page must be greater than start page.
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

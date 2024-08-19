@@ -1,0 +1,133 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="modal">
+  <div class="modal-dialog" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button aria-label="Close" class="close" type="button">
+          <cds-icon (click)="cancel()" shape="close"></cds-icon>
+        </button>
+        <h3 class="modal-title">Upload Doc</h3>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="serverError" class="alert alert-danger" role="alert">
+          <div class="alert-items">
+            <div class="alert-item static">
+              <div class="alert-icon-wrapper">
+                <cds-icon
+                  class="alert-icon"
+                  shape="exclamation-circle"
+                ></cds-icon>
+              </div>
+              <span class="alert-text">{{ serverError }} </span>
+            </div>
+          </div>
+        </div>
+        <div class="clr-row custom-row">
+          <label
+            style="font-size: 14px; margin-top: 0.3rem"
+            class="clr-control-label clr-col-12 clr-col-md-2"
+            >File</label
+          >
+          <div class="clr-col-12 clr-col-md-8" style="display: flex">
+            <input
+              clrInput
+              type="file"
+              id="inputFile"
+              name="inputFile"
+              [accept]="fileType"
+              style="display: none"
+              (change)="fileBrowseHandler($event.target)"
+            />
+            <input
+              clrInput
+              [attr.disabled]="
+                showProgress && !serverError && !(errFormat || sizeTip)
+                  ? true
+                  : null
+              "
+              type="button"
+              (click)="btnClick()"
+              value="Choose File"
+              class="upload-input"
+            />
+            <input
+              clrInput
+              type="text"
+              id="inputFileAgent"
+              readonly
+              [value]="inputUpdateFileName"
+              [title]="inputUpdateFileName"
+              class="customTex clr-col-12 clr-col-md-12"
+            />
+          </div>
+          <div class="clr-col-12 clr-col-md-1">
+            <clr-tooltip *ngIf="errFormat">
+              <cds-icon
+                clrTooltipTrigger
+                shape="error-standard"
+                style="color: red"
+                class="valid-tooltip"
+              >
+              </cds-icon>
+              <clr-tooltip-content
+                class="error-tooltip"
+                clrPosition="top-right"
+                clrSize="md"
+                *clrIfOpen
+              >
+                <span>{{ errFormat }}</span>
+              </clr-tooltip-content>
+            </clr-tooltip>
+            <clr-tooltip *ngIf="sizeTip">
+              <cds-icon
+                clrTooltipTrigger
+                shape="error-standard"
+                style="color: red"
+                class="valid-tooltip"
+              ></cds-icon>
+              <clr-tooltip-content
+                clrPosition="top-right"
+                clrSize="md"
+                *clrIfOpen
+              >
+                <span>Uploaded file should be less than or equal to 200M</span>
+              </clr-tooltip-content>
+            </clr-tooltip>
+          </div>
+        </div>
+        <div class="clr-row custom-row">
+          <clr-progress-bar
+            *ngIf="showProgress"
+            style="margin-left: 0.5rem"
+            [clrValue]="processObj.process"
+            clrLabeled
+          ></clr-progress-bar>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" type="button" (click)="cancel()">
+          Cancel
+        </button>
+        <button
+          *ngIf="!file || errFormat || sizeTip"
+          class="btn btn-primary"
+          type="button"
+          disabled
+        >
+          Upload
+        </button>
+        <button
+          *ngIf="file && !(errFormat || sizeTip)"
+          class="btn btn-primary"
+          type="button"
+          (click)="upload()"
+          [clrLoading]="uploadBtnState"
+        >
+          Upload
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop" aria-hidden="true"></div>

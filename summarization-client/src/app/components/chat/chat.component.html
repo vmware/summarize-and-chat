@@ -1,0 +1,234 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+
+<div
+  class="assistIcon tooltip-bottom"
+  [ngClass]="showTooltip || open ? 'assistBack' : ''"
+  data-tooltip="Chat with your document"
+  (mouseover)="imgHover(true)"
+  (mouseout)="imgHover(false)"
+  (click)="showSide()"
+>
+
+  <img
+    *ngIf="showImg"
+    style="width: 1.5rem; height: 1.5rem"
+    alt="Ask me anything about your document"
+    src="../../../assets/icons/chat-bubble.svg"
+  />
+  
+</div>
+
+<right-drawer
+  [backdropOpacity]="0.5"
+  [ngClass]="'drawer-' + headerColor"
+  [(open)]="open"
+  [pinnable]="pinnable"
+  [(pinned)]="pinned"
+  (showing)="showingClick()"
+  (hiding)="hidingClick()"
+  (pinnedChange)="pinnedChange()"
+  [hideFixedBottom]="true"
+>
+  <div class="chat-right">
+    <div *ngIf="showH" class="chat-history">
+      <div *ngIf="!history?.length" class="history-record history-no-record">
+        No history
+      </div>
+      <div *ngIf="history?.length" class="history-record">
+        <ng-container *ngFor="let _ of history; let i = index">
+          <div class="chat-mainRow chat-mainAsk" *ngIf="_.user_query">
+            <div class="history-time">
+              {{ _.create_time | date : "yyyy-MM-dd HH:mm:ss" }}
+            </div>
+            <div class="chat-mainContent chat-ask">
+              <span [innerHTML]="markdownToHtml(_.user_query)"></span>
+            </div>
+          </div>
+          <div class="chat-mainRow" *ngIf="_.assistant_answer">
+            <div style="display: flex">
+              <img
+              style="
+                width: 1.2rem;
+                height: 1.2rem;
+                margin-bottom: 0.5rem;
+                display: block;
+                filter: invert(48%) sepia(79%) saturate(200%) hue-rotate(86deg);
+              "
+              src="../../../assets/icons/helix-line.svg"
+            />
+              <div class="history-time">
+                {{ _.create_time | date : "yyyy-MM-dd HH:mm:ss" }}
+              </div>
+            </div>
+            <div class="chat-mainContent chat-response">
+              <span [innerHTML]="markdownToHtml(_.assistant_answer)"></span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div *ngIf="history && history.length" class="delDiv">
+        <div class="batch" (click)="clickClear()">Clear history</div>
+        <div *ngIf="showDelCard" class="delete-card" style="display: block">
+          <div class="warning-message" style="text-align: center">
+            Confirm deleting all history?
+            <div class="button-group gap-10 mt-3">
+              <div class="button cancel" (click)="cancelDel()">Cancel</div>
+              <div class="button accept" (click)="clearHistory()">Confirm</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-mainLine" id="chat-mainLine">
+      <img
+        style="width: 1rem; height: 1rem; cursor: pointer"
+        alt="History"
+        title="Show history"
+        *ngIf="showHistoryIcon"
+        src="../../../assets/icons/history_icon.svg"
+        (click)="showHistory()"
+      />
+      <div class="chat-out" id="chat-out">
+        <div style="width: 328px">            
+          <div
+              class="greet greetGap"
+              style="width: 85%"
+              id="outputGreetingHelp"
+          ></div>  
+          <div
+            *ngIf="conversation.messages.length > 0"
+            class="greet-question"
+            style="margin-top: 1rem"
+          >
+            <!-- <div class="greet">{{ prompt }}</div> -->
+            <div class="question">
+              <ng-container *ngFor="let inputQuestion of promptQuestions">
+                <div
+                  class="question-chat"
+                  (click)="questionClick(inputQuestion)"
+                >
+                  <img src="../../../assets/icons/chat-bubble.svg" class="img-top" />
+                  <div class="text">{{ inputQuestion }}</div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <ng-container *ngFor="let _ of conversation.messages; let i = index">
+            <div *ngIf="conversation.messages[i]">
+              <div class="chat-mainRow chat-mainAsk">
+                <div class="chat-mainContent chat-ask">
+                  <span
+                    [innerHTML]="
+                      markdownToHtml(conversation.messages[i]['message'])
+                    "
+                  ></span>
+                </div>
+              </div>
+              <div
+                *ngIf="
+                  !conversation.responses[i] &&
+                  i == conversation.messages.length - 1
+                "
+                class="loading-response"
+              >
+                <span style="color: red" *ngIf="errMessage">{{
+                  errMessage
+                }}</span>
+                <ng-container *ngIf="!errMessage">
+                  <span class="spinner spinner-inline"> Loading... </span>
+                  generating response
+                </ng-container>
+              </div>
+            </div>
+            <div *ngIf="conversation.responses[i]">
+              <div class="chat-mainRow">
+                <img
+                  style="
+                    width: 1.2rem;
+                    height: 1.2rem;
+                    margin-bottom: 0.5rem;
+                    display: block;
+                    filter: invert(48%) sepia(79%) saturate(200%) hue-rotate(86deg);
+                  "
+                  src="../../../assets/icons/helix-line.svg"
+                />
+                
+                <div class="chat-mainContent chat-response">
+                  <span
+                    [innerHTML]="
+                      markdownToHtml(conversation.responses[i]['response'])
+                    "
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div *ngIf="showChat">
+        <div >
+          <div *ngIf="conversation.messages.length <= 0" class="greet-question">
+            <div style="width: 328px">
+              <!-- <div class="greet">{{ prompt }}</div> -->
+              <div class="question">
+                <ng-container
+                  *ngFor="let inputQuestion of promptQuestions; let k = index"
+                >
+                  <div
+                    class="question-chat"
+                    (click)="questionClick(inputQuestion)"
+                  >
+                    <img src="../../../assets/icons/chat-bubble.svg" class="img-top" />
+                    
+                    <div class="text">{{ inputQuestion }}</div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input">
+            <div class="input">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin-bottom: 0.4rem;
+                "
+              >
+              </div>
+              <textarea
+                id="prompt_textarea"
+                placeholder="Ask me a question about your doc"
+                [(ngModel)]="inputText"
+                (keydown.enter)="outputText($event)"
+                rows="1"
+                (input)="onChatInput()"
+              ></textarea>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <img
+                *ngIf="!inputText.trim()"
+                class="checked"
+                src="../../../assets/icons/unchecked.svg"
+              />
+              <img
+                *ngIf="inputText.trim()"
+                (click)="outputText($event)"
+                class="checked"
+                src="../../../assets/icons/checked.svg"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</right-drawer>

@@ -1,0 +1,22 @@
+/*
+Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+.timeRangeWrap {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+}
+
+.timeLabel {
+  color: #666;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.line {
+  height: 1px;
+  width: 6px;
+  background: #8c8c8c;
+  margin: 0 5px;
+}

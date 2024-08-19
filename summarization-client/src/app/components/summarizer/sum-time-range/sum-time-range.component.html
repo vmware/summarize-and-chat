@@ -1,0 +1,31 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="timeRangeWrap">
+  <div>
+    <nz-time-picker
+      (ngModelChange)="onStartDateChange($event)"
+      [(ngModel)]="timeStart"
+      [nzDisabledHours]="disabledHours"
+      [nzDisabledMinutes]="disabledMinutes"
+      [nzDisabledSeconds]="disabledSeconds"
+      [nzPlaceHolder]="'Select time'"
+      nzNowText=" "
+      [nzStatus]="startStatus"
+      nzOkText="ok"
+    ></nz-time-picker>
+  </div>
+  <span class="line"></span>
+  <div>
+    <nz-time-picker
+      (ngModelChange)="onEndDateChange($event)"
+      [(ngModel)]="timeEnd"
+      [nzDisabledHours]="disabledHours"
+      [nzDisabledMinutes]="disabledMinutes"
+      [nzDisabledSeconds]="disabledSeconds"
+      [nzPlaceHolder]="'Select time'"
+      nzNowText=" "
+      [nzStatus]="endStatus"
+      nzOkText="ok"
+    ></nz-time-picker>
+  </div>
+</div>

@@ -1,0 +1,236 @@
+/*
+Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+.chat-header {
+  padding: 0.5rem 1rem 1.2rem;
+  background-color: #f3f4f8;
+  border-bottom: 1px solid #ccc;
+}
+
+.chat-main {
+  display: flex;
+  height: calc(100% - 77px);
+}
+
+.chat-mainBox {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: #f3f4f8;
+  background-size: cover;
+  background-attachment: fixed;
+  max-width: 50%;
+  padding: 0 1rem;
+}
+
+.chat-mainBox:nth-of-type(2) {
+  border-left: 1px solid #ccc;
+}
+.preview-file {
+  flex: 1;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.textarea-cls {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  border: 0px;
+  color: #606060 !important;
+  resize: none;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  background-color: white;
+}
+
+.textarea-holder {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: calc(100% - 73px);
+  width: 100%;
+  left: 0;
+  top: 50px;
+  border-radius: 10px;
+  cursor: text;
+}
+
+.textarea-holder .overlay {
+  margin-top: -50px;
+}
+
+.textarea-holder .overlay {
+  margin-top: -50px;
+}
+
+.overlay {
+  border: 2px solid #f2f2f2;
+  padding: 10px 16px;
+  cursor: pointer;
+  -webkit-transition: 0.2s;
+  transition: all 0.2s;
+  border-radius: 5px;
+  width: 160px;
+}
+
+.overlay:hover {
+  background-color: #e3f5fc;
+}
+
+.overlay:first-child {
+  margin-right: 20px;
+}
+
+.summaryLength {
+  ::ng-deep .clr-form-control {
+    display: inline-block;
+    margin-top: 0;
+  }
+}
+
+.loading {
+  display: flex;
+  position: absolute;
+  height: 98.4%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  top: 0;
+  left: 0;
+  z-index: 1;
+  text-align: center;
+}
+
+.viewer {
+  width: 100%;
+  background-color: white;
+  overflow: auto;
+  iframe {
+    height: calc(100% - -22px);
+  }
+}
+
+.ul-class {
+  overflow: auto;
+}
+
+ngx-doc-viewer div {
+  height: 81vh;
+  background-color: white;
+  overflow: auto;
+}
+
+::ng-deep .docx-wrapper {
+  height: 81vh;
+  padding: 0px !important;
+  padding-bottom: 0px !important;
+  overflow: hidden;
+
+  .docx {
+    height: 81vh;
+    background-color: white;
+    overflow: auto !important;
+    padding: 8px 14px !important;
+    width: 719px !important;
+    min-height: 500px !important;
+    column-count: 1 !important;
+    column-gap: 0px !important;
+    margin-bottom: 0 !important;
+
+    article {
+      height: 79vh;
+    }
+  }
+}
+
+.docClass {
+  height: calc(83% - 100px);
+  overflow: auto;
+  // height: 50%;
+}
+
+.right-bottom {
+  display: flex;
+  margin-right: 0.5rem;
+}
+
+.right-bottom-space {
+  justify-content: end;
+  margin-bottom: 3.5rem;
+}
+
+.right-bottom-end {
+  justify-content: end;
+  margin-bottom: 1.5rem;
+}
+
+.right-bottom-show {
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.ai-loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  animation: ellipsis 2s infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+}
+@keyframes ellipsis {
+  from {
+    width: 2px;
+  }
+  to {
+    width: 15px;
+  }
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0rem 1rem 0rem;
+}
+
+.main-wrapper {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+::ng-deep #secondaryToolbarToggle {
+  display: none !important;
+}
+
+.not-tip {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.uploadArea {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.headerWrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 70%;
+}
+
+.docUrlClass {
+  height: 50%;
+}

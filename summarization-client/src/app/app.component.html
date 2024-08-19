@@ -1,0 +1,23 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="main-container" style="overflow-y: hidden; overflow-x: hidden">
+  <app-header
+    (outPinned)="outPinned($event)"
+    [showAssist]="showAssist"
+  ></app-header>
+  <div
+    class="content-container"
+    [ngClass]="{
+      'vmw-right-drawer-slide-in': open && showing && pinned,
+      'vmw-right-drawer-slide-out': !showing && pinned,
+      'vmw-right-drawer-open': open && pinned
+    }"
+  >
+    <div>
+      <app-nav></app-nav>
+    </div>
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div [ngClass]="{ 'bottom-file': files.length > 0 || file }" class="uploadWrap">
+  <div class="uploadBox" *ngIf="files.length == 0 && !file && !loading">
+    <label class="btn btn-primary" for="uploadFile"
+      ><cds-icon style="margin-right: 0.5rem" shape="upload-cloud"> </cds-icon>
+      Upload Doc</label
+    >
+    <input
+      type="file"
+      id="uploadFile"
+      name="localFile"
+      [accept]="fileType"
+      (change)="fileBrowseHandler($event.target)"
+    />
+  </div>
+  <div *ngIf="files.length > 0 || file">
+    <div class="clr-row displayWidth">
+      <div class="file-icon clr-col-1">
+        <cds-icon shape="file" style="width: 1.5rem; height: 1.5rem"></cds-icon>
+      </div>
+      <div class="clr-col-6">
+        <div
+          class="text-left"
+          style="color: #a4a4a4"
+          class="fileName"
+          title="{{ file?.name }}"
+        >
+          {{ file?.name }}
+        </div>
+      </div>
+      <div
+        class="clr-col-1 text-right delete"
+        style="margin-left: 3rem; word-break: break-all"
+        (click)="deleteFile()"
+      >
+        <clr-tooltip *ngIf="errFormat">
+          <cds-icon
+            clrTooltipTrigger
+            shape="error-standard"
+            style="color: red"
+            class="valid-tooltip"
+          >
+          </cds-icon>
+          <clr-tooltip-content
+            class="error-tooltip"
+            clrPosition="top-right"
+            clrSize="md"
+            *clrIfOpen
+          >
+            <span>{{ errFormat }}</span>
+          </clr-tooltip-content>
+        </clr-tooltip>
+        <cds-icon shape="window-close"></cds-icon>
+      </div>
+    </div>
+  </div>
+  <clr-tooltip *ngIf="sizeTip" style="color: red">
+    <cds-icon
+      clrTooltipTrigger
+      role="img"
+      size="24"
+      shape="info-circle"
+    ></cds-icon>
+    <clr-tooltip-content clrPosition="top-right" clrSize="md" *clrIfOpen>
+      <span>Uploaded file should be less than or equal to 200M</span>
+    </clr-tooltip-content>
+  </clr-tooltip>
+  <clr-progress-bar
+    *ngIf="progressFlag"
+    [clrValue]="uploadProgress"
+    clrSuccess
+    clrLabeled
+  >
+  </clr-progress-bar>
+</div>

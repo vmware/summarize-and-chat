@@ -1,0 +1,48 @@
+.history_wrap {
+  padding: 20px;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.history_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.operate {
+  cursor: pointer;
+  color: #179bd3;
+  font-weight: 600;
+  margin-right: 1rem;
+  margin-top: 0.5rem;
+}
+
+.limit-height {
+  overflow-y: hidden;
+  height: 70vh !important;
+  flex: 1 1 auto;
+}
+
+.upload {
+  margin-top: 8.8vh;
+  width: 7.7rem;
+}
+
+.analyze {
+  margin-top: 8.8vh;
+  width: 8.7rem;
+}
+
+.nameSpace {
+  word-break: break-all;
+  overflow: hidden;
+  width: 100%;
+}
+
+.summary-download {
+  cursor: pointer;
+}

@@ -1,0 +1,33 @@
+.upload-input {
+  height: 1.5rem;
+  max-height: 1.5rem;
+  border: 1px solid #e2e2e2;
+  border-radius: 5px;
+  width: 20%;
+  min-width: 84px;
+  background: none;
+  border: 1px solid #e2e2e2;
+}
+
+.upload-input:not([readonly]):focus,
+.upload-input:not([readonly]).clr-focus {
+  background: none;
+  border: 1px solid #e2e2e2;
+}
+
+.customTex {
+  width: 10rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  border: none;
+}
+
+.custom-row {
+  margin: 1rem 2rem 0 0rem;
+}
+
+.modal {
+  ::ng-deep .clr-form-control {
+    margin-top: 0;
+  }
+}

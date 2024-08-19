@@ -1,0 +1,38 @@
+<div class="chat-mainArea">
+  <textarea
+    #textarea
+    placeholder="Ask any question..."
+    [(ngModel)]="inputText"
+    (keydown.enter)="send($event)"
+    [attr.rows]="lineCount"
+    (input)="onChatInput()"
+    autofocus
+    [ngClass]="
+      hasActiveRequest ? 'textarea-right-border' : 'textarea-left-border'
+    "
+  ></textarea>
+  <span
+    *ngIf="hasActiveRequest"
+    class="spinner spinner-md activeRequestSpinner"
+  >
+    Loading...
+  </span>
+  <button *ngIf="!hasActiveRequest" (click)="send($event)">
+    <svg
+      t="1682141916531"
+      class="icon"
+      viewBox="0 0 1024 1024"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      p-id="1271"
+      width="16"
+      height="16"
+    >
+      <path
+        d="M0 1024l106.496-474.112 588.8-36.864-588.8-39.936L0 0l1024 512z"
+        fill="#ffffff"
+        p-id="1272"
+      ></path>
+    </svg>
+  </button>
+</div>

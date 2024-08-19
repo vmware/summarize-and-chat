@@ -1,0 +1,11 @@
+/*
+Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0
+*/
+.content-area {
+  padding: unset !important;
+}
+
+::ng-deep :root {
+  --right-drawer-width: 380px;
+}

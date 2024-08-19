@@ -1,0 +1,27 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<clr-vertical-nav [clrVerticalNavCollapsible]="collapsed">
+  <a clrVerticalNavLink routerLink="./nav/doc" routerLinkActive="active">
+    <cds-icon clrVerticalNavIcon shape="grid-view"></cds-icon>
+    Summarizer
+  </a>
+  <a clrVerticalNavLink routerLink="./nav/files" routerLinkActive="active">
+    <cds-icon clrVerticalNavIcon shape="file-group"></cds-icon>
+    My Files
+  </a>
+  <div class="bottom-nav">
+    <a clrVerticalNavLink routerLinkActive="active" routerLink="./faq">
+      <cds-icon shape="info-circle" clrVerticalNavIcon></cds-icon>
+      Help
+    </a>
+    <a
+      clrVerticalNavLink
+      routerLinkActive="active"
+      target="_blank"
+      href="{{contactUs}}"
+    >
+      <cds-icon shape="envelope" clrVerticalNavIcon></cds-icon>
+      Contact Us
+    </a>
+  </div>
+</clr-vertical-nav>

@@ -1,0 +1,51 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<header class="header header-6 clr-row">
+  <div class="branding">
+    <a href="/home" class="nav-link">
+      <!-- <cds-icon
+        shape="helix"
+        class="shrinkIcon"
+        style="color: lightskyblue"
+      ></cds-icon> -->
+      <img style="
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-left: 0.3rem;
+        margin-bottom: 0.2rem;
+        margin-right: 0.3rem;
+        display: block;
+        filter: invert(48%) sepia(79%) saturate(200%) hue-rotate(86deg);
+        " src="../../../assets/icons/helix-line.svg" />
+      <span class="title">{{title}}</span>
+    </a>
+
+  </div>
+  <div class="header-actions">
+    <assist *ngIf="showAssist && user && canAssist" 
+      #assist [user]="userStr" [helps]="helps"
+      [promptQuestions]="inputQuestions" 
+      (showPin)="showPin($event)" 
+      [headerColor]="6" (sendToApi)="sendOut($event)"
+      [inputPinned]="inputPinned" 
+      [inputOpen]="inputOpen" 
+      [inputPinnable]="inputPinnable" 
+      [history]="history"
+      [showHistoryIcon]="true" 
+      (delHistory)="delHistory($event)" 
+      (getHistory)="getHistory()">
+    </assist>
+    <a *ngIf="!user" (click)="login()" class="nav-link nav-text" style="cursor: pointer">
+      Sign In
+    </a>
+    <clr-dropdown *ngIf="user" style="margin-right: 0.3rem">
+      <button class="nav-text" clrDropdownTrigger>
+        {{ user.name }}
+        <cds-icon shape="angle" direction="down"></cds-icon>
+      </button>
+      <clr-dropdown-menu *clrIfOpen clrPosition="bottom" style="z-index: 1100">
+        <a (click)="logout()" clrDropdownItem>Log out</a>
+      </clr-dropdown-menu>
+    </clr-dropdown>
+  </div>
+</header>

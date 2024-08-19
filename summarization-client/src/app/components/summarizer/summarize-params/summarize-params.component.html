@@ -1,0 +1,442 @@
+
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<clr-vertical-nav
+  [clrVerticalNavCollapsible]="true"
+  class="sum_collspsed"
+  [(clrVerticalNavCollapsed)]="chatCollapsed"
+>
+  <div class="sum_content" style="display: flex; flex-direction: column">
+    <div class="sum_prefix" *ngIf="chatCollapsed" style="flex-grow: 1"></div>
+    <div class="sum_config" *ngIf="!chatCollapsed">
+      <h4 class="sum_tit">Configure Your Summary</h4>
+      <form clrForm name="configForm" class="configForm">
+        <div *ngIf="isShowFinal">
+          <label
+            class="clr-control-label clr-col-12 clr-col-md-12 customer-label"
+            >Template:</label
+          >
+          <div>
+            <clr-radio-container clrInline style="margin-left: 0.1rem">
+              <clr-radio-wrapper>
+                <input
+                  *ngIf="!uploadLoading && editTemplate"
+                  type="radio"
+                  clrRadio
+                  name="executive"
+                  required
+                  value="executive"
+                  (ngModelChange)="templateChange($event)"
+                  [(ngModel)]="template"
+                />
+                <input
+                  *ngIf="uploadLoading || !editTemplate"
+                  type="radio"
+                  clrRadio
+                  name="executive"
+                  required
+                  value="executive"
+                  (ngModelChange)="templateChange($event)"
+                  [(ngModel)]="template"
+                  disabled
+                />
+                <label>Executive Summary</label>
+              </clr-radio-wrapper>
+              <clr-radio-wrapper style="margin-left: 1rem">
+                <input
+                  *ngIf="!uploadLoading && editTemplate"
+                  type="radio"
+                  clrRadio
+                  name="meeting"
+                  required
+                  value="meeting"
+                  (ngModelChange)="templateChange($event)"
+                  [(ngModel)]="template"
+                />
+                <input
+                  *ngIf="uploadLoading || !editTemplate"
+                  type="radio"
+                  clrRadio
+                  name="meeting"
+                  required
+                  value="meeting"
+                  (ngModelChange)="templateChange($event)"
+                  [(ngModel)]="template"
+                  disabled
+                />
+                <label>Meeting Summary</label>
+              </clr-radio-wrapper>
+            </clr-radio-container>
+          </div>
+        </div>
+
+        <div *ngIf="showPageRange">
+          <label
+            class="clr-control-label clr-col-12 clr-col-md-12 customer-label"
+            style="display: inline-block; margin-bottom: 0.5rem"
+            >Number of Pages:</label
+          >
+          <app-page-range
+            (pageRangeData)="getPageRangeData($event)"
+          ></app-page-range>
+        </div>
+
+        <div *ngIf="showTimeRange">
+          <label
+            class="clr-control-label clr-col-12 clr-col-md-12 customer-label"
+            style="display: inline-block; margin-bottom: 0.5rem"
+            >Time Range:</label
+          >
+          <app-sum-time-range
+            (rangeStartData)="rangeStartData($event)"
+            (rangeEndData)="rangeEndData($event)"
+          ></app-sum-time-range>
+        </div>
+
+        <label
+          class="clr-control-label clr-col-12 clr-col-md-12 customer-label"
+          style="display: inline-block"
+          >Depth of AI Analysis:</label
+        >
+        <div class="btn-group" style="margin-left: 0.5rem; margin-top: 0.5rem">
+          <div class="radio btn">
+            <input
+              checked
+              type="radio"
+              name="btn-group-demo-radios"
+              id="quick"
+              value="quick"
+              (change)="changeConfig($event)"
+            />
+            <label class="clr-col-12 clr-col-md-12" for="quick">Quick</label>
+          </div>
+          <div class="radio btn">
+            <input
+              type="radio"
+              name="btn-group-demo-radios"
+              id="detailed"
+              value="detailed"
+              (change)="changeConfig($event)"
+            />
+            <label class="clr-col-12 clr-col-md-12" for="detailed"
+              >Detailed</label
+            >
+          </div>
+        </div>
+
+        <div *ngIf="template == 'executive'">
+          <div class="sum_group">
+            <div class="sum_label">
+              <label class="clr-control-label">Format</label>
+              <clr-signpost>
+                <clr-signpost-content *clrIfOpen clrPosition="top-left">
+                  <p>
+                    One of paragraph, bullets, or auto, defaults to auto.
+                    Indicates the style in which the summary will be delivered -
+                    in a free form paragraph or in bullet points. If auto is
+                    selected, the best option will be picked based on the input
+                    text.
+                  </p>
+                </clr-signpost-content>
+              </clr-signpost>
+            </div>
+            <div class="sum_detail">
+              <select
+                clrSelect
+                name="format"
+                [(ngModel)]="configInfoObj.format"
+                (ngModelChange)="formatChange($event)"
+              >
+                <option value="auto">Auto</option>
+                <option value="paragraph">Paragraph</option>
+                <option value="bullets">Bullets</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="sum_group">
+          <div class="sum_label">
+            <label class="clr-control-label">Length</label>
+            <clr-signpost>
+              <clr-signpost-content *clrIfOpen clrPosition="top-left">
+                <p>
+                  One of short, medium, long, or auto defaults to auto.
+                  Indicates the approximate length of the summary. If auto is
+                  selected, the best option will be picked based on the input
+                  text.
+                </p>
+              </clr-signpost-content>
+            </clr-signpost>
+          </div>
+          <div class="sum_detail">
+            <select
+              clrSelect
+              name="Len"
+              [(ngModel)]="configInfoObj.len"
+              (ngModelChange)="lenChange($event)"
+            >
+              <option value="auto">Auto</option>
+              <option value="short">Short</option>
+              <option value="medium">Medium</option>
+              <option value="long">Long</option>
+            </select>
+          </div>
+        </div>
+
+        <div *ngIf="showConfig">
+          <div class="sum_group">
+            <div class="sum_label">
+              <label class="clr-control-label">Model</label>
+              <clr-signpost>
+                <clr-signpost-content *clrIfOpen clrPosition="top-left">
+                  <p>
+                    The identifier of the model to generate the summary with.
+                    Currently available models are Mistral -7B (default),
+                    Mixtral - 8x7B, LLAMA 3 - 70B and WizardLM - 70B. Smaller,
+                    "light" models are faster, while larger models will perform better.
+                  </p>
+                </clr-signpost-content>
+              </clr-signpost>
+            </div>
+            <div class="sum_detail">
+              <select
+                clrSelect
+                name="model"
+                [(ngModel)]="configInfoObj.model"
+                (ngModelChange)="modelChange($event)"
+              >
+                <ng-container *ngFor="let model of models">
+                  <option value="{{model.name}}">
+                    {{model.display_name}}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+          <div class="sum_group">
+            <div class="sum_label">
+              <label class="clr-control-label">Chunk Size</label>
+            </div>
+            <div class="sum_detail" style="margin-left: 9%">
+              <clr-range-container [clrRangeHasProgress]="true">
+                <input
+                  type="range"
+                  clrRange
+                  [(ngModel)]="configInfoObj.chunkSizeVal"
+                  [min]="1000"
+                  [max]="max_chunk_size"
+                  (change)="sizeRangeChange($event)"
+                  name="chunkSizeRange"
+                />
+                <clr-control-helper
+                  >Max number of tokens for chunk</clr-control-helper
+                >
+              </clr-range-container>
+              <input
+                type="number"
+                [(ngModel)]="configInfoObj.chunkSizeVal"
+                class="sum_input_val"
+                name="chunkSizeInput"
+                #chunkSizeInput="ngModel"
+                required
+                [max]="max_chunk_size"
+                [min]="1000"
+                (ngModelChange)="
+                  numInputChange('chunkSizeVal', 1000, max_chunk_size)
+                "
+              />
+              <div
+                role="tooltip"
+                aria-haspopup="true"
+                class="tooltip tooltip-xs tooltip-bottom-left err-color"
+                *ngIf="!chunkSizeInput.valid"
+              >
+                <cds-icon shape="info-circle" size="24"></cds-icon>
+                <span class="tooltip-content"
+                  >Please input a value between 1000- {{ max_chunk_size }}</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="sum_group">
+            <div class="sum_label">
+              <label class="clr-control-label">Chunk Overlap</label>
+            </div>
+            <div class="sum_detail" style="margin-left: 9%">
+              <clr-range-container [clrRangeHasProgress]="true">
+                <input
+                  type="range"
+                  clrRange
+                  [(ngModel)]="configInfoObj.chunkOverlapVal"
+                  [min]="100"
+                  [max]="300"
+                  (change)="overLapRangeChange($event)"
+                  name="chunkOverlapRange"
+                />
+                <clr-control-helper
+                  >Overlap in tokens between chunks</clr-control-helper
+                >
+              </clr-range-container>
+              <input
+                type="number"
+                [(ngModel)]="configInfoObj.chunkOverlapVal"
+                class="sum_input_val"
+                name="chunkOverlaoInput"
+                #chunkOverlaoInput="ngModel"
+                required
+                max="300"
+                min="100"
+                (ngModelChange)="numInputChange('chunkOverlapVal', 100, 300)"
+              />
+              <div
+                role="tooltip"
+                aria-haspopup="true"
+                class="tooltip tooltip-xs tooltip-bottom-left disabled-ico err-color"
+                *ngIf="!chunkOverlaoInput.valid"
+              >
+                <cds-icon shape="info-circle" size="24"></cds-icon>
+                <span class="tooltip-content"
+                  >Please input a value between 100-300</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="sum_group">
+            <div class="sum_label">
+              <label class="clr-control-label">Temperature</label>
+              <clr-signpost style="margin-left: 3.8rem">
+                <clr-signpost-content *clrIfOpen clrPosition="top-left">
+                  <p>
+                    Ranges from 0 to1. Controls the randomness of the output.
+                    Lower values tend to generate more “predictable” output,
+                    while higher values tend to generate more “creative” output.
+                  </p>
+                </clr-signpost-content>
+              </clr-signpost>
+            </div>
+            <div class="sum_detail" style="margin-left: 0.8rem">
+              <clr-range-container [clrRangeHasProgress]="true">
+                <input
+                  type="range"
+                  clrRange
+                  [(ngModel)]="configInfoObj.temperature"
+                  min="0"
+                  max="1"
+                  step=".05"
+                  (change)="temperatureChange($event)"
+                  name="temperature"
+                />
+                <clr-control-helper>Variance in response</clr-control-helper>
+              </clr-range-container>
+              <input
+                type="number"
+                [(ngModel)]="configInfoObj.temperature"
+                class="sum_input_val"
+                name="temperature"
+                #temperature="ngModel"
+                required
+                max="1"
+                min="0"
+                step=".05"
+                (ngModelChange)="numInputChange('temperature', 0, 1)"
+              />
+              <div
+                role="tooltip"
+                aria-haspopup="true"
+                class="tooltip tooltip-xs tooltip-bottom-left disabled-ico err-color"
+                *ngIf="!chunkOverlaoInput.valid"
+              >
+                <cds-icon shape="info-circle" size="24"></cds-icon>
+                <span class="tooltip-content"
+                  >Please input a value between 0-1</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="sum_group sum_gurop_align">
+            <div class="sum_label">
+              <label class="clr-control-label" *ngIf="isShowFinal"
+                >Chunk Prompt</label
+              >
+              <label class="clr-control-label" *ngIf="!isShowFinal"
+                >Prompt</label
+              >
+              <clr-signpost>
+                <clr-signpost-content *clrIfOpen clrPosition="top-left">
+                  <p *ngIf="isShowFinal">Prompt for each chunk summarize</p>
+                  <p *ngIf="!isShowFinal">
+                    Prompt you want to do for documents
+                  </p>
+                </clr-signpost-content>
+              </clr-signpost>
+            </div>
+            <div class="sum_detail">
+              <textarea
+                style="line-height: 24px"
+                [(ngModel)]="configInfoObj.chunkPromptdes"
+                placeholder="Enter value here"
+                rows="{{ isShowFinal ? 8 : 16 }}"
+                cols="28"
+                name="chunkPrompt"
+                (change)="finalPromptChange()"
+              ></textarea>
+            </div>
+          </div>
+          <div class="sum_group sum_gurop_align" *ngIf="isShowFinal">
+            <div class="sum_label">
+              <label class="clr-control-label">Final Prompt</label>
+              <clr-signpost>
+                <clr-signpost-content *clrIfOpen clrPosition="top-left">
+                  <p>
+                    Prompt for combine all the chunks summarize. Note: This
+                    prompt should be let LLM give concise answer as far as
+                    possible, you can use some number keyword like: "give 5 key
+                    points".
+                  </p>
+                </clr-signpost-content>
+              </clr-signpost>
+            </div>
+            <div class="sum_detail">
+              <textarea
+                style="line-height: 24px"
+                [(ngModel)]="configInfoObj.finalPromptDes"
+                placeholder="Enter value here"
+                rows="8"
+                cols="28"
+                name="finalPrompt"
+                (change)="finalPromptChange()"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <label
+          *ngIf="showAlert"
+          class="clr-control-label clr-col-12 clr-col-md-12 customer-label"
+          style="display: inline-block; margin-top: 2rem"
+          >Estimated Time for Completion:</label
+        >
+        <div *ngIf="showAlert" style="margin-top: 0.2rem">
+          <cds-icon
+            size="md"
+            shape="clock"
+            style="margin-left: 0.5rem; margin-right: 0.5rem"
+          ></cds-icon
+          >Less than 2 minutes
+        </div>
+        <div *ngIf="showAlert" style="margin-left: 0.5rem; margin-top: 1rem">
+          <clr-alert>
+            <clr-alert-item>
+              <span class="alert-text">
+                It may take longer to generate a summary for a large file. You
+                will receive an email notification when it is ready.
+              </span>
+            </clr-alert-item>
+          </clr-alert>
+        </div>
+
+      </form>
+    </div>
+    <div class="bottomFix"></div>
+  </div>
+</clr-vertical-nav>

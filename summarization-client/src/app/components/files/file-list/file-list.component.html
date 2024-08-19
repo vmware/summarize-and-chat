@@ -1,0 +1,123 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+<div class="history_wrap">
+  <div class="history_header">
+    <h3 style="margin-top: -0.2rem">My Files</h3>
+    <div style="display: flex">
+      <!-- <button
+        (click)="clickAnalyze()"
+        class="btn btn-primary"
+        *ngIf="showAnalyze"
+      >
+        Analyze
+      </button> -->
+      <div class="operate" (click)="refresh()">
+        <cds-icon shape="refresh" style="cursor: pointer"></cds-icon>
+        REFRESH
+      </div>
+    </div>
+  </div>
+  <clr-datagrid
+    [(clrDgSelected)]="selected"
+    [clrDgLoading]="loading"
+    class="limit-height"
+    (clrDgSelectedChange)="selectionChanged($event)"
+  >
+    <clr-dg-column [clrDgField]="'file'" style="max-width: 25vw; width: 358px"
+      >File</clr-dg-column
+    >
+    <clr-dg-column [clrDgField]="'vtt'" style="max-width: 25vw; width: 358px"
+      >Vtt file</clr-dg-column
+    >
+    <clr-dg-column [clrDgField]="'status'">Status</clr-dg-column>
+    <clr-dg-column style="width: 15rem">Summary history</clr-dg-column>
+    <clr-dg-column [clrDgField]="'time'">Last updated On</clr-dg-column>
+
+    <clr-dg-row
+      *clrDgItems="let item of listData"
+      [clrDgItem]="item"
+      [clrDgSelectable]="item.status === 'done'"
+    >
+      <clr-dg-action-overflow>
+        <button
+          class="action-item"
+          (click)="summarize(item)"
+          [disabled]="item.status != 'done'"
+        >
+          Summarize
+        </button>
+        <button
+          class="action-item"
+          (click)="chat(item)"
+          [disabled]="item.index != 'done'"
+        >
+          Chat
+        </button>
+        <button class="action-item" (click)="clickEdit(item)">Edit</button>
+        <button
+          class="action-item"
+          (click)="onDownload(item)"
+          [disabled]="item.status != 'done'"
+        >
+          Download
+        </button>
+        <button class="action-item" (click)="onDelete(item)">Delete</button>
+      </clr-dg-action-overflow>
+      <clr-dg-cell>
+        <div class="nameSpace">{{ item.file }}</div>
+      </clr-dg-cell>
+      <clr-dg-cell>
+        <div class="nameSpace">{{ item.vtt }}</div>
+      </clr-dg-cell>
+      <clr-dg-cell>{{ item.status }}</clr-dg-cell>
+      <clr-dg-cell
+        title="{{ item.summary }}"
+        style="
+          width: 15rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        "
+        ><cds-icon
+          (click)="download(item.summary, item.file)"
+          class="summary-download"
+          *ngIf="item.summary"
+          shape="download"
+        ></cds-icon
+        >{{ item.summary }}</clr-dg-cell
+      >
+      <clr-dg-cell>{{ item.time | date : "yyyy-MM-dd HH:mm:ss" }}</clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-footer>
+      <clr-dg-pagination #pagination [clrDgPageSize]="10">
+        <clr-dg-page-size
+          #clrDgPageSize
+          [clrPageSizeOptions]="[10, 20, 50, 100]"
+        >
+          <label [for]="clrDgPageSize.pageSizeOptionsId">Users per page</label>
+        </clr-dg-page-size>
+        {{ pagination.firstItem + 1 }} - {{ pagination.lastItem + 1 }} of
+        {{ listData.length }} history entry
+      </clr-dg-pagination>
+    </clr-dg-footer>
+  </clr-datagrid>
+  <div style="display: flex">
+    <button (click)="clickAnalyze()" class="btn btn-primary analyze" *ngIf="showAnalyze">
+      Insight Analysis
+    </button>
+    <button (click)="clickUpload()" class="btn btn-primary upload">
+      <cds-icon style="margin-right: 0.5rem" shape="upload-cloud"> </cds-icon>
+      Upload doc
+    </button>
+</div>
+<app-file-upload
+  *ngIf="showUpload"
+  (uploadOut)="uploadOut($event)"
+></app-file-upload>
+
+<app-file-edit
+  *ngIf="showEdit"
+  [data]="data"
+  (editOut)="editOut($event)"
+></app-file-edit>

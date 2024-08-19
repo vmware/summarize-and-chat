@@ -1,0 +1,91 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+
+<div class="clr-row">
+  <div class="clr-col-1"></div>
+  <div class="clr-col-5 title">
+    <h3>Frequently Asked Questions:</h3>
+  </div>
+</div>
+
+<div class="clr-row">
+  <div class="clr-col-1"></div>
+  <div class="clr-col-10">
+    <clr-accordion [clrAccordionMultiPanel]="true">
+      <clr-accordion-panel [clrAccordionPanelOpen]="true">
+        <clr-accordion-title
+          ><span>Q&nbsp;:</span>What types of documents are supported by
+          vSummarizer?
+        </clr-accordion-title>
+        <clr-accordion-content *clrIfExpanded
+          ><span>A&nbsp;:</span>Summarizer supports PDF, Microsoft Word,
+          PowerPoint, text and popular audio file types (mp3, mp4, mpeg, mpga,
+          m4a, wav, and webm) and Web Video Text Tracks (VTT) file
+          type.</clr-accordion-content
+        >
+      </clr-accordion-panel>
+
+      <clr-accordion-panel>
+        <clr-accordion-title
+          ><span>Q&nbsp;:</span>What is the size limit for a document?
+        </clr-accordion-title>
+        <clr-accordion-content *clrIfExpanded
+          ><span>A&nbsp;:</span>Files up to 500MB can be uploaded through the
+          "Upload Doc" button.
+        </clr-accordion-content>
+      </clr-accordion-panel>
+
+      <clr-accordion-panel>
+        <clr-accordion-title
+          ><span>Q&nbsp;:</span>How do I generate a text summary?
+        </clr-accordion-title>
+        <clr-accordion-content *clrIfExpanded
+          ><span>A&nbsp;:</span>You can insert, paste or upload your text file,
+          use the QUICK executive summary template or select the DETAILED option
+          to select the model, write your prompts, set the chunk size, chunk
+          overlap, summary type & summary length. Then click the Generate
+          Summary button. For longer text, you will see the estimated time to
+          finish and receive email notification when it is
+          done.</clr-accordion-content
+        >
+        <div style="text-align: center">
+          <img
+            src="assets/home_show.png"
+            style="height: 500px; margin-top: 1rem"
+          />
+        </div>
+      </clr-accordion-panel>
+
+      <clr-accordion-panel>
+        <clr-accordion-title
+          ><span>Q&nbsp;:</span>How do I generate a meeting recording summary?
+        </clr-accordion-title>
+        <clr-accordion-content *clrIfExpanded
+          ><span>A&nbsp;:</span>You first upload your audio file. For large
+          audio files, you will receive email notification after the
+          speech-to-text conversion is done. Click the link in the email or go
+          to My Files page and select the file you just uploaded, then click the
+          Summarize button from the dropdown. Follow the steps in "How do I
+          generate a text summary?".
+        </clr-accordion-content>
+        <div style="text-align: center">
+          <img src="assets/home_file.png" style="height: 500px; margin: 1rem" />
+        </div>
+      </clr-accordion-panel>
+      <clr-accordion-panel>
+        <clr-accordion-title
+          ><span>Q&nbsp;:</span>How do I chat with my document?
+        </clr-accordion-title>
+        <clr-accordion-content *clrIfExpanded
+          ><span>A&nbsp;:</span>In the Summarizer page, you can click the
+          Intelligent Assist icon on the top menu to start chatting with your
+          document as shown pic 1. You can pick one of the auto-generated
+          questions or enter your own question and get the answer with the
+          source in seconds. In the My Files page, select the document that you
+          want to chat and click the Chat button from the dropdown to chat with
+          your document.
+        </clr-accordion-content>
+      </clr-accordion-panel>
+    </clr-accordion>
+  </div>
+</div>

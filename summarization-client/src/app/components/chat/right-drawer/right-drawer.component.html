@@ -1,0 +1,55 @@
+<!-- Copyright 2024 VMware, Inc.
+SPDX-License-Identifier: Apache-2.0 -->
+
+<div class="drawer-container" [hidden]="!visible"
+        [style.top]="(topOffset + headerHeight) + 'px'">
+    <div class="left-area"
+           *ngIf="backdrop"
+           [style.opacity]="backdropOpacity"
+           (click)="hideDrawer()"
+           [ngClass]="{'hiding': isHiding}"></div>
+
+    <div class="flex-container" #rightDrawer
+            role="dialog"
+            [attr.aria-label]="ariaLabel ? ariaLabel : undefined"
+            [attr.aria-modal]="!pinned"
+            [style.height]="containerHeight"
+            [ngClass]="{
+               'hiding': isHiding
+            }">
+        <div class="drawer">
+            <div class="pin-container" *ngIf="pinnable || expandable">
+                <clr-tooltip *ngIf="expandable">
+                    <button clrTooltipTrigger (click)="toggleExpandState(!expanded)" [attr.aria-label]="expandButtonLabel">
+                        <cds-icon
+                                [ngClass]="{'expanded': expanded}"
+                                [attr.shape]="expanded ? 'shrink' : 'resize'"
+                                size="16"></cds-icon>
+                    </button>
+                    <clr-tooltip-content clrPosition="bottom-left">
+                        {{expandButtonLabel}}
+                    </clr-tooltip-content>
+                </clr-tooltip>
+
+                <clr-tooltip *ngIf="pinnable">
+                    <button clrTooltipTrigger (click)="togglePinState()" [attr.aria-label]="pinButtonLabel">
+                        <cds-icon
+                                [ngClass]="{'pinned': pinned && !closeOnUnpin}"
+                                [attr.shape]="pinned && closeOnUnpin ? 'times' : 'pin'"
+                                size="20"></cds-icon>
+                    </button>
+                    <clr-tooltip-content clrPosition="bottom-left">
+                        {{pinButtonLabel}}
+                    </clr-tooltip-content>
+                </clr-tooltip>
+            </div>
+            <ng-content></ng-content>
+        </div>
+
+        <div class="fixed-bottom-container"
+                *ngIf="!hideFixedBottom"
+                [ngClass]="{'slide-out': isHiding}">
+            <ng-content select="'.fixed-bottom'"></ng-content>
+        </div>
+    </div>
+</div>

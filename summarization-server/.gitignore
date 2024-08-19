@@ -1,0 +1,9 @@
+.DS_Store
+.idea/
+build/
+dist/
+DC/
+.venv/
+*__pycache__*
+*.log
+*.csv

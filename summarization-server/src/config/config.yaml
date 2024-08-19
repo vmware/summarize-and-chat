@@ -1,0 +1,44 @@
+okta:
+  OKTA_AUTH_URL: OKTA_AUTH_URL # YOUR OKTA AUTH URL
+  OKTA_CLIENT_ID: OKTA_CLIENT_ID # YOUR OKTA CLIENT ID
+  OKTA_CLIENT_SECRET: OKTA_CLIENT_SECRET # YOUR OKTA CLIENT SECRET
+  OKTA_ENDPOINTS: [ 'admin' ]
+llm:
+  LLM_API: LLM_API # YourOpenAI-compatible inference API
+  AUTH_KEY: AUTH_KEY
+  QA_MODEL: "mistralai/Mixtral-8x7B-Instruct-v0.1" # QA model name
+  QA_MODEL_MAX_TOKEN_LIMIT: 30000 # Max token limit
+  SUMMARIZE_MODEL: "meta-llama/Meta-Llama-3-70B-Instruc" # default summarization model
+  SUMMARIZE_MODEL_MAX_TOKEN_LIMIT: 6500 # Max token limit
+  EMBEDDING_MODEL: "Salesforce/SFR-Embedding-Mistral" # Embedding model
+  VECTOR_DIM: 4096 # Embedding model dimention 
+  MAX_COMPLETION: 700
+  CHUNK_SIZE: 512
+  CHUNK_OVERLAP: 20
+  NUM_QUERIES: 3
+  TOP_K: 5
+  LLM_BATCH_SIZE: 1
+  AUDIO_API: STT_API # audio-to-text api
+database:
+  PG_HOST: "localhost"
+  PG_PORT: 5432
+  PG_USER: DB_USER
+  PG_PASSWD: DB_PASSWORD
+  PG_DATABASE: "vectordb"
+  PG_TABLE: "embeddings"
+  PG_VECTOR_DIM: 4096
+server:
+  HOST: "0.0.0.0"
+  PORT: 5000
+  NUM_WORKERS: 4
+  PDF_READER: pypdf # default PDF parser
+  FILE_PATH: "./data"
+  RELOAD: False
+  VECTOR_DB: pgvector 
+email:
+  SMTP_SERVER: YOUR SMTP MAIL SERVER
+  SENDER: YOUR SENDER EMAIL
+  SUMMARIZER_URL: CALL BACK URL
+  
+
+

@@ -87,7 +87,8 @@ class PgvectorDB:
                                             'file_type',
                                             'creation_date',
                                             'last_modified_date',
-                                            'last_accessed_date']
+                                            'last_accessed_date',
+                                            'user']
 
     def add_docid(self, documents: List[Document], id: int):
         for doc in documents:
@@ -109,10 +110,9 @@ class PgvectorDB:
         return conn
 
     # file: full path of file
-    def vector_index(self, file: str, user: str, doc_id: str = ''):
-        logger.info(f'----init_pgvector_engine---{file}---{user}---')
+    def vector_index(self, file: str, user: str, doc_id: str, vttfile: str=''):
+        logger.info(f'----init_pgvector_engine---{file}---{user}---{vttfile}---')
         s = time.time()
-        # filename, _ = os.path.splitext(file)
         
         text_splitter = SentenceSplitter(chunk_size=self.chunk_size, chunk_overlap=self.chunk_overlap)
         llm = LocalLLM(model_name=self.llm_model)
@@ -129,8 +129,12 @@ class PgvectorDB:
                                     metadata_mode=MetadataMode.EMBED)
         ]
         
-        # documents = SimpleDirectoryReader(input_files=[Path(f"{self.filepath}/{user}/{file}")],
-        documents = SimpleDirectoryReader(input_files=[Path(file)], file_extractor={".pdf": pdf_extractor()}).load_data()            
+        if vttfile == '':
+            filepath = file
+        else:
+            filepath = vttfile
+
+        documents = SimpleDirectoryReader(input_files=[Path(filepath)], file_extractor={".pdf": pdf_extractor()}).load_data()  
         self.add_meta(documents, user)
         self.add_docid(documents, doc_id)
         pipeline = IngestionPipeline(transformations=[text_splitter] + extractors, documents=documents)
@@ -170,9 +174,7 @@ class PgvectorDB:
             transformations = None,
         )
         logger.info(f'----index spend time:---{time.time()-s}---')
-        filename = os.path.basename(file)
-       
-        # update_document(str(file), user, questions)
+
         self.documentDB.update_document(str(file), user, questions)
         return index
 

@@ -201,6 +201,8 @@ def choose_summary_template(model:str):
         return mistral_summary_template_str
     elif model.startswith('WizardLM'):
         return wizardlm_summary_template_str
+    else: 
+        return wizardlm_meeting_template_str
 
 
 def choose_meeting_template(model:str):
@@ -209,6 +211,8 @@ def choose_meeting_template(model:str):
     elif model.startswith('mistralai'):
         return mistral_meeting_template_str
     elif model.startswith('WizardLM'):
+        return wizardlm_meeting_template_str
+    else:
         return wizardlm_meeting_template_str
 
 
@@ -219,3 +223,5 @@ def choose_analyze_template(model:str):
         return mistral_multi_file_template_str
     elif model.startswith('WizardLM'):
         return wizardlm_multi_file_template_str
+    else:
+        return wizardlm_meeting_template_str

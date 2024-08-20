@@ -50,10 +50,4 @@ async def verify_token(token: str = Depends(oauth2_scheme)):
         raise HTTPException(401, 'unAuthed', {"Authenticate": f"Bearer {token}"})
     return token
 
-# async def verify_api_token(token: str = Depends(oauth2_scheme)):
-#     try:
-#         apitoken = await apiAuth.check_auth(token)
-#     except:
-#         raise HTTPException(401, 'unAuthed', {"Authenticate": f"Bearer {token}"})
-#     return apitoken
 

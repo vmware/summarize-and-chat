@@ -26,13 +26,15 @@ client = OpenAI(api_key = config['AUTH_KEY'], base_url = config['LLM_API'])
 
 def completions(model: str, prompt: str, max_tokens: int = config['MAX_COMPLETION'],
                 temperature: float = 0, stream: bool = False):
-    response = client.completions.create(prompt=prompt,
-                                         model=model,
-                                         stream=stream,
-                                         max_tokens=max_tokens,
-                                         temperature=temperature)
-    return response
-
+    try:
+        response = client.completions.create(prompt=prompt,
+                                            model=model,
+                                            stream=stream,
+                                            max_tokens=max_tokens,
+                                            temperature=temperature)
+        return response
+    except Exception as e:
+        logger.error(f'----request error------{e}')
 
 # use chat/completion  endpoint, mistral model not support system role
 def chat_completions(model: str, prompt: str, system_config: str, max_tokens: int = config['MAX_COMPLETION'],
@@ -222,7 +224,6 @@ def call_stream(prompt: str,
                 stream: bool = True):
     response = ''
     print('---call llm---')
-    print(model)
     try:
         response = completions(prompt=prompt,
                                model=model,

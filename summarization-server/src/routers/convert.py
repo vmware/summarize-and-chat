@@ -29,14 +29,17 @@ async def audio_to_vtt(doc: str = Form(), token=Depends(verify_token)):
 @router.post("/audio-to-vtt/complete")
 # async def audio_task_notification(data: Vtt, background_tasks:BackgroundTasks,token=Depends(verify_jks)):
 async def audio_task_notification(data: Vtt, background_tasks:BackgroundTasks):
-    logger.info(f'--receive notification--{data.user}---{data.audio}')
+    user = data.user
+    logger.info(f'--receive notification--{user}---{data.audio}')
     # email notify
     notify_vtt_finished(data.user, os.path.basename(data.audio))
     # wait fo saving vtt file to the system
     time.sleep(30)
     # add to documents table and create index
-    doc_id = await documentDB.add_document(str(data.vtt_path), data.user)
-    background_tasks.add_task(pgvectorDB.vector_index, str(data.vtt_path), data.user, doc_id)
+    doc = documentDB.get_document(str(data.audio), user)
+    if doc:
+        doc_id = doc[0][0]
+    background_tasks.add_task(pgvectorDB.vector_index, str(data.audio), user, doc_id, str(data.vtt_path))
 
 @router.get("/convert-process")
 async def get_process(audio: str, token=Depends(verify_token)):

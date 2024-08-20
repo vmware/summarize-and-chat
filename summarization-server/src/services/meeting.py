@@ -42,7 +42,6 @@ async def stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_
 
 # combine and reduce chunk result
 async def stage2_summarize(stage1, chunk_size, chunk_overlap, prompt, model_name, temperature):
-    max_token = llm_config["SUMMARIZE_MODEL_MAX_TOKEN_LIMIT"]
     modelDict = _env.get_model_by_name(model_name)
     max_token = int(modelDict.get("max_token"))
     
@@ -83,7 +82,6 @@ async def summarize_meeting(docs, chunk_size, chunk_overlap, chunk_prompt, final
                             user=None,
                             file_name=None,
                             ):
-    max_token = llm_config["SUMMARIZE_MODEL_MAX_TOKEN_LIMIT"]
     modelDict = _env.get_model_by_name(model_name)
     max_token = int(modelDict.get("max_token"))
     print(max_token)

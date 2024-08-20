@@ -45,9 +45,9 @@ async def upload(doc: UploadFile,
     name = secure_filename(doc.filename)
     
     # if doc upload finished, init doc index and run in background
+    doc_id = await documentDB.add_document(str(doc_path), email)
     if doc_path.exists() and not validate_audio(name):
-        doc_id = await documentDB.add_document(str(doc_path), email)
-        background_tasks.add_task(pgvectorDB.vector_index, str(doc_path), email, doc_id)
+        background_tasks.add_task(pgvectorDB.vector_index, str(doc_path), email, doc_id, str(doc_path) )
         
     # if audio file upload finished,start convert task auto
     if doc_path.exists() and validate_audio(name):

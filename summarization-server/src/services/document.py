@@ -42,7 +42,6 @@ async def stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_
 
 # combine and reduce chunk result
 async def stage2_summarize(stage1, chunk_size, chunk_overlap, prompt, model_name, temperature):
-    max_token = llm_config["SUMMARIZE_MODEL_MAX_TOKEN_LIMIT"]
     modelDict = _env.get_model_by_name(model_name)
     max_token = int(modelDict.get("max_token"))
     
@@ -82,11 +81,10 @@ async def summarize_docs(docs, chunk_size, chunk_overlap, chunk_prompt, final_pr
                          user=None,
                          file_name=None,
                          stream_mode=True):
-    max_token = llm_config["SUMMARIZE_MODEL_MAX_TOKEN_LIMIT"]
     modelDict = _env.get_model_by_name(model)
     max_token = int(modelDict.get("max_token"))
-    
     final_context = await stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model, temperature)
+
     if LCCustomLLM.tokens(final_context) > max_token:
         final_context = await stage2_summarize(final_context, chunk_size, chunk_overlap, final_prompt, model, temperature)
     # format and length parameter just use to controller final summary

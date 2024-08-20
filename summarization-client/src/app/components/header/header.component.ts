@@ -176,11 +176,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
       body: JSON.stringify(requestData),
       onopen: async (response: any) => {
         that.output = '';
-        if (
-          response.ok &&
-          response.headers.get('content-type') ===
-            'text/event-stream;charset=utf-8; charset=utf-8'
-        ) {
+        // if (
+        //   response.ok &&
+        //   response.headers.get('content-type') ===
+        //     'text/event-stream;charset=utf-8; charset=utf-8'
+        // )
+        if (response.ok) {
           that.assist?.setResponse('');
         } else if (response.status == 401) {
           console.log('401 error');

@@ -104,7 +104,6 @@ def get_vtt(audio: Path, user: str):
     vtt_path = Path(f"{config['FILE_PATH']}/{user}/{vtt_name}")
     return vtt_path
 
-
 def remove_file(name: str, user: str):
     filename = secure_filename(name)
     file_path = Path(f"{config['FILE_PATH']}/{user}/{filename}")

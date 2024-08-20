@@ -1,0 +1,25 @@
+auth:
+  AUTH_URL: "your api auth url"
+  CACHE_TIMEOUT: 86400 #  1 day
+model:
+  MODEL_SIZE: "small"
+  COMPUTE_TYPE: "int8"
+  DEVICE: "cpu" # "cuda"
+  DEVICE_INDEX: 1
+server:
+  HOST: "0.0.0.0"
+  PORT: 9000
+  SERVER_WORKERS: 1
+  MAX_WORKS: 3
+  RELOAD: False
+  DEVICE_INDEX: 1
+  CPU_THREADS: 1
+  NUM_WORKERS: 1
+  FILE_PATH: "../data"
+  SUMMARIZATION_SERVER: "http://localhost:8000"
+  AUDIO_SIZE_LIMITE: 50*1024*1024
+email:
+  EMAIL_SMTP_SERVER: "your email server"
+  EMAIL_SENDER: "sender email"
+
+

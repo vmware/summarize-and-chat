@@ -1,0 +1,7 @@
+.DS_Store
+.idea/
+build/
+dist/
+.venv/
+*__pycache__*
+data

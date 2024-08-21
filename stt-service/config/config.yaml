@@ -1,4 +1,5 @@
 auth:
+  ENABLED: False
   AUTH_URL: "your api auth url"
   CACHE_TIMEOUT: 86400 #  1 day
 model:

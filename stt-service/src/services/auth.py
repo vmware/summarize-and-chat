@@ -19,6 +19,7 @@ NO_AUTH_ENDPOINTS = ["/health","/api/v1/health"]
 class AuthService():
     def __init__(self):
         cfg = stt_env.get_auth_values(True)
+        self.auth_enabled = cfg['ENABLED']
         self.auth_url = cfg['AUTH_URL']
         self.cache_timeout = cfg['CACHE_TIMEOUT']
         self.noauth_endpoints = NO_AUTH_ENDPOINTS
@@ -46,7 +47,7 @@ class AuthService():
         return is_valid
 
     async def is_valid_token(self, token: str) -> bool:
-        url = f"{self.auth_url}/api/auth/v1/api-tokens/authorize"
+        url = self.auth_url
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = {"token": token}
 
@@ -63,53 +64,27 @@ class AuthService():
         response_data = response.json()
         return 'access_token' in response_data
             
-    # def is_okta_endpoints(self, endpoint):
-    #     for ep in self.okta_endpoints:
-    #         if ep in endpoint:
-    #             return True
-    #     return False
-        
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         try:
+            cfg = stt_env.get_auth_values(True)
+            auth_enabled = cfg['ENABLED']
+            
             endpoint = request.url.path.rstrip('/')
-            if endpoint in authservice.noauth_endpoints:
+            if not auth_enabled or endpoint in authservice.noauth_endpoints:
                 print('no auth required')
                 return await call_next(request)
             
             token = authservice.get_token(request)
             logger.info(f'token: {token}')
-            # if authservice.is_okta_endpoints(endpoint):
-            #     logger.info('okta auth')
-            #     email = await okta_token_validate(token)
-            #     request.state.authemail = email
-            #     response = await call_next(request)
-            #     return response
-
             await authservice.check_auth(token)
             response = await call_next(request)
             return response
         except HTTPException as e:
             logger.error(e.detail)
             return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
-
-
-# Define the auth scheme and access token URL
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
-async def okta_token_validate(token):
-    OKTA_AUDIENCE="api://default"
-    try:
-        res = validate_locally(
-            token,
-            stt_env.okta_auth_url,
-            OKTA_AUDIENCE,
-            stt_env.okta_client_id
-        )
-        return res.get('sub_email', "") if res else None
-    except Exception:
-        raise HTTPException(status_code=403)
 
 authservice = AuthService()
 

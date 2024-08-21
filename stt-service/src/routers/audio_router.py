@@ -20,7 +20,7 @@ router = APIRouter(
 async def audio_to_vtt(request: Request, audio: AudioInfo):
     filename = secure_filename(audio.audio)
     server_config= stt_env.get_server_values()
-    FILE_PATH = server_config["FILE_PATH"] #stt_env.get_path()
+    FILE_PATH = server_config["FILE_PATH"] 
     audio_path = Path(f"{FILE_PATH}/{audio.user}/{filename}")
     vtt_path = await audio_utils.vtt_file(filename, audio.user, audio.env)
     

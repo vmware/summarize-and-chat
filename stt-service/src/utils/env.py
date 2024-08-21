@@ -55,7 +55,7 @@ class environment:
     def get_auth_values(self, refresh=False):
         auth = self.get_config('auth', refresh=refresh)
         if auth:
-            return self.get_children(auth, ["AUTH_URL", "CACHE_TIMEOUT"])
+            return self.get_children(auth, ["ENABLED","AUTH_URL", "CACHE_TIMEOUT"])
         return {}
 
     def get_model_values(self, refresh=False):
@@ -66,7 +66,7 @@ class environment:
     def get_server_values(self, refresh=False):
         server = self.get_config('server', refresh=refresh)
         if server:
-            return self.get_children(server, ["SERVER_WORKERS", "MAX_WORKS", "RELOAD", "CPU_THREADS", "NUM_WORKERS", "AUDIO_SIZE_LIMITE", "FILE_PATH"])
+            return self.get_children(server, ["SERVER_WORKERS", "MAX_WORKS", "RELOAD", "CPU_THREADS", "NUM_WORKERS", "AUDIO_SIZE_LIMITE", "FILE_PATH","SUMMARIZATION_SERVER"])
     
     def get_email_values(self, refresh=False):
         email = self.get_config('email', refresh=refresh)

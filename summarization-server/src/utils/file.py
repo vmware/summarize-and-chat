@@ -1,4 +1,3 @@
-from faster_whisper import WhisperModel
 from fastapi.responses import StreamingResponse
 import math,json,os
 from pydub import AudioSegment
@@ -21,30 +20,30 @@ def convert_seconds_to_hms(seconds):
     return output
 
 
-async def audio_to_text(audio_file, vtt_file, user):
-    print('---audio to vtt----')
-    # return vtt data
-    if vtt_file.exists():
-        def stream_data():
-            result = {
-                "progress": 1,
-                "finished": "done"
-            }
-            data = f'event: message\nretry: 15000\ndata:{json.dumps(result)}\n\n'
-            yield data
-        return StreamingResponse(stream_data(), media_type='text/event-stream;charset=utf-8')
+# async def audio_to_text(audio_file, vtt_file, user):
+#     print('---audio to vtt----')
+#     # return vtt data
+#     if vtt_file.exists():
+#         def stream_data():
+#             result = {
+#                 "progress": 1,
+#                 "finished": "done"
+#             }
+#             data = f'event: message\nretry: 15000\ndata:{json.dumps(result)}\n\n'
+#             yield data
+#         return StreamingResponse(stream_data(), media_type='text/event-stream;charset=utf-8')
 
-    # model_size = "large-v2"
-    model_size = "small"
-    # compute_type: int8_float16, int8
-    model = WhisperModel(model_size, device="cpu", compute_type="int8", download_root="./cache")
-    # local need manual download huggingface model to local
-    # model = WhisperModel(model_size, device="cpu", compute_type="int8",cpu_threads=4,num_workers=4,download_root="D:\\code\\summarization-server\\DC")
-    # filter out parts of the audio without speech
-    segments, info = model.transcribe(str(audio_file), vad_filter=True)
-    # audio time
-    sound = AudioSegment.from_file(str(audio_file))
-    audio_time = len(sound) / 1000
+#     # model_size = "large-v2"
+#     model_size = "small"
+#     # compute_type: int8_float16, int8
+#     model = WhisperModel(model_size, device="cpu", compute_type="int8", download_root="./cache")
+#     # local need manual download huggingface model to local
+#     # model = WhisperModel(model_size, device="cpu", compute_type="int8",cpu_threads=4,num_workers=4,download_root="D:\\code\\summarization-server\\DC")
+#     # filter out parts of the audio without speech
+#     segments, info = model.transcribe(str(audio_file), vad_filter=True)
+#     # audio time
+#     sound = AudioSegment.from_file(str(audio_file))
+#     audio_time = len(sound) / 1000
 
     def event_stream():
         part = 0

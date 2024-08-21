@@ -1,11 +1,10 @@
 <div align='center'> <h1>Summarize and Chat</h1> </div>
 
-This repository contains the source code for document summarize-and-chat project. The project addresses the complex requirements of building a scalable solution for extracting key information from documents and engaging in natural language conversations with users by providing simple and extensible interfaces and APIs for common document summarization and chat interaction tasks.
+This repository contains the source code for the summarize-and-chat project. This project provides a unified document summarization and chat framework with LLMs, aiming to address the challenges of building a scalable solution for document summarization while facilitating natural language interactions through chat interfaces. 
 
 Core features include:
 
-- Supports PDF, Microsoft Word, PowerPoint, text and popular audio file types (mp3, mp4, mpeg, mpga, m4a, wav, and webm) and Web Video Text Tracks (VTT) file type.
-- Offline Speech-to-text convention and send notification to users when finished
+- Support a range of document lengths and formats (PDF, DOCX, PPTX, TXT, VTT, VTT, Audio) and accommodate various types of content
 - Summarization:
   - Insert, paste or upload your files & preview files
   - Pick the way you want to summarize (allow user to provide custom prompts, chunk size, page range for docs or time range for audio)
@@ -27,9 +26,9 @@ The scripts provided in this repository are intended to be used for educational 
 
 Summarize-and-chat project includes three components:
 
-- summarization-client: Angular application for the UI
-- summarization-server: FastAPI gateway server to manage core application functions including access control, data handling, powers the UI, and provides APIs
-- speech-to-text (stt): A microservice to convert audio to text using OpenAI’s faster-whisper API
+- summarization-client: Angular/Clarity web application for content management, summary generation and chat.
+- summarization-server: FastAPI gateway server to manage core application functions including access control, document ingestion pipeline,summarization with Map Reduce provided by [LangChain](https://python.langchain.com/v0.2/docs/introduction/), and improved RAG with [LlamaIndex Fusion Retriever](https://docs.llamaindex.ai/en/stable/examples/retrievers/reciprocal_rerank_fusion/).
+- stt-service (speech-to-text): A microservice to convert audio to text using OpenAI’s faster-whisper API
 
 ## Quick start
 

@@ -20,7 +20,7 @@ Core features include:
 <br>
 
 ## Disclaimer
-The scripts provided in this repository are intended to be used for educational purposes but not for production applications. Be aware that LLMs pose inherent vulnerabilities and risks, as illustrated by the [OWASP Top 10 for Large Language Model Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/). We strongly encourage customers to pay attention to OWASP guidance and the [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) to build safe and robust AI systems.
+Be aware that LLMs pose inherent vulnerabilities and risks, as illustrated by the [OWASP Top 10 for Large Language Model Applications](https://owasp.org/www-project-top-10-for-large-language-model-applications/). We strongly encourage customers to pay attention to OWASP guidance and the [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework) to build safe and robust AI systems.
 
 ## What is included
 

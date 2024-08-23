@@ -16,7 +16,7 @@ webvtt-py==0.4.6
 sentence-transformers==2.2.2
 faiss-cpu==1.7.4
 ffmpeg==1.4
-llama-index-core==0.10.24
+llama-index-core==0.10.38
 llama-index-readers-file==0.1.6
 llama-index-vector-stores-faiss==0.1.2
 llama-index-vector-stores-postgres==0.1.13

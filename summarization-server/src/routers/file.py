@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 import os, requests
 import pickle
 import datetime
@@ -52,11 +55,10 @@ async def upload(doc: UploadFile,
     # if audio file upload finished,start convert task auto
     if doc_path.exists() and validate_audio(name):
         # use the audio gpu service to do convert
-        llm_config = _env.get_llm_values()
-        audioAPI = llm_config['AUDIO_API']
+        stt_config = _env.get_stt_values()
         try:
-            logger.info(f'--call audio service {audioAPI} --')
-            access_token = llm_config['AUTH_KEY'] 
+            logger.info(f'--call audio service f"{stt_config["STT_API"]}/convert/audio/vtt" --')
+            access_token = stt_config['AUTH_KEY'] 
             headers = {
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {access_token}'
@@ -68,7 +70,7 @@ async def upload(doc: UploadFile,
             }
             logger.info(f'--headers---{headers}')
             logger.info(f'---data--{data}')
-            response = requests.post(f"{llm_config['AUDIO_API']}/convert/audio/vtt", json=data, headers=headers)
+            response = requests.post(f"{stt_config['STT_API']}/convert/audio/vtt", json=data, headers=headers)
             logger.info(response)
         except Exception as e:
             logger.error(f'--call audio gpu service error:{e}')

@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 llama_summary_template_str = """<s>[INST] <<SYS>>You are a smart AI document assistant could answer user query by provide the document context information and must comply with the following rules:
 1.Answer user query only base on provided document context information and not prior knowledge.
 2.If context information too little to answer query and you should give answer:'please provide more context information'.

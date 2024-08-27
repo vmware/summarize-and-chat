@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from fastapi.responses import StreamingResponse
 from src.services.vllm import call_stream
 

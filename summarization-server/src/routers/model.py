@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from fastapi import APIRouter, Body, Depends
 from src.services.auth import verify_token
 from typing import Dict

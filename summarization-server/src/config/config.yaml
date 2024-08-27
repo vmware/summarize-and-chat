@@ -4,19 +4,21 @@ okta:
   OKTA_ENDPOINTS: [ 'admin' ]
 llm:
   LLM_API: "your LLM api server" # https://api.openai.com/v1"
-  AUTH_KEY: "your api key"
+  AUTH_KEY: "your openai api key"
   QA_MODEL: "default QA model" #mistralai/Mixtral-8x7B-Instruct-v0.1"
   QA_MODEL_MAX_TOKEN_LIMIT: "max token limit for QA model" #30000
-  SUMMARIZE_MODEL: "default model for summarization task" #"meta-llama/Meta-Llama-3-70B-Instruc"
   EMBEDDING_MODEL: "embedding model" #"Salesforce/SFR-Embedding-Mistral"
   VECTOR_DIM: "embedding model vector dimension" #4096
-  MAX_COMPLETION: "max tokens of completion for each query" #700
-  CHUNK_SIZE: "default chunk size" #512
-  CHUNK_OVERLAP: "default chunk overlap" # 20
-  NUM_QUERIES: "default number of queries" #10
+  SIMIL_TOP_K: 10 # Retrieve TOP_K most similar docs from the PGVector store
+  RERANK_ENABLED: True
+  RERANK_MODEL: "BAAI/bge-reranker-large" # re-ranking model
+  RERANK_TOP_N: 5 # Rerank and pick the 5 most similar docs
+  MAX_COMPLETION: 700 # max tokens of completion for each query
+  CHUNK_SIZE: 512 # default chunk size
+  CHUNK_OVERLAP: 20 # default chunk overlap
+  NUM_QUERIES: 3 # default number of queries
   TOP_K: 5
   LLM_BATCH_SIZE: 1
-  AUDIO_API: "stt-service URL" #"http://localhost:9000/api/v1"
 database:
   PG_HOST: "Database host" #"localhost"
   PG_PORT: 5432
@@ -34,6 +36,9 @@ server:
   FILE_PATH:  "../data"
   RELOAD: False
   VECTOR_DB: pgvector 
+stt:
+  STT_API: "http://localhost:9000/api/v1" # STT-server URL
+  AUTH_KEY: "your STT api auth key"
 email:
   SMTP_SERVER: "email server"
   SENDER: "send email"

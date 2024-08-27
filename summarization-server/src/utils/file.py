@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from fastapi.responses import StreamingResponse
 import math,json,os
 from pydub import AudioSegment
@@ -19,72 +22,46 @@ def convert_seconds_to_hms(seconds):
     output = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02},{milliseconds:03}"
     return output
 
+    # def event_stream():
+    #     part = 0
+    #     progress = 0
+    #     vtt = 'WEBVTT\n\n'
+    #     for segment in segments:
+    #         duration = f"{convert_seconds_to_hms(segment.start)} --> {convert_seconds_to_hms(segment.end)}\n"
+    #         result = "{:.2f}".format(round(segment.end/audio_time, 2))
+    #         progress = float(result)
+    #         if progress > 1:
+    #             progress = 1
+    #         print(progress)
+    #         text = segment.text.strip() + '\n\n'
+    #         part += 1
+    #         line = str(part) + "\n" + duration + text
+    #         msg = {
+    #             # "text": line,
+    #             "progress": progress,
+    #             "finished": "in progress"
+    #         }
+    #         vtt += line
+    #         data = f'event: message\nretry: 15000\ndata:{json.dumps(msg)}\n\n'
+    #         yield data
 
-# async def audio_to_text(audio_file, vtt_file, user):
-#     print('---audio to vtt----')
-#     # return vtt data
-#     if vtt_file.exists():
-#         def stream_data():
-#             result = {
-#                 "progress": 1,
-#                 "finished": "done"
-#             }
-#             data = f'event: message\nretry: 15000\ndata:{json.dumps(result)}\n\n'
-#             yield data
-#         return StreamingResponse(stream_data(), media_type='text/event-stream;charset=utf-8')
-
-#     # model_size = "large-v2"
-#     model_size = "small"
-#     # compute_type: int8_float16, int8
-#     model = WhisperModel(model_size, device="cpu", compute_type="int8", download_root="./cache")
-#     # local need manual download huggingface model to local
-#     # model = WhisperModel(model_size, device="cpu", compute_type="int8",cpu_threads=4,num_workers=4,download_root="D:\\code\\summarization-server\\DC")
-#     # filter out parts of the audio without speech
-#     segments, info = model.transcribe(str(audio_file), vad_filter=True)
-#     # audio time
-#     sound = AudioSegment.from_file(str(audio_file))
-#     audio_time = len(sound) / 1000
-
-    def event_stream():
-        part = 0
-        progress = 0
-        vtt = 'WEBVTT\n\n'
-        for segment in segments:
-            duration = f"{convert_seconds_to_hms(segment.start)} --> {convert_seconds_to_hms(segment.end)}\n"
-            result = "{:.2f}".format(round(segment.end/audio_time, 2))
-            progress = float(result)
-            if progress > 1:
-                progress = 1
-            print(progress)
-            text = segment.text.strip() + '\n\n'
-            part += 1
-            line = str(part) + "\n" + duration + text
-            msg = {
-                # "text": line,
-                "progress": progress,
-                "finished": "in progress"
-            }
-            vtt += line
-            data = f'event: message\nretry: 15000\ndata:{json.dumps(msg)}\n\n'
-            yield data
-
-        # write vtt
-        with open(str(vtt_file), 'w', encoding="utf-8") as file:
-            file.write(vtt)
-        result = {
-            # "text": '',
-            "progress": 1,
-            "finished": "done"
-        }
-        data = f'event: message\nretry: 15000\ndata:{json.dumps(result)}\n\n'
-        # send email
-        if vtt_file.exists():
-            try:
-                notify_vtt_finished(user, audio_file.name)
-            except Exception as e:
-                print(str(e))
-        yield data
-    return StreamingResponse(event_stream(), media_type='text/event-stream;charset=utf-8')
+    #     # write vtt
+    #     with open(str(vtt_file), 'w', encoding="utf-8") as file:
+    #         file.write(vtt)
+    #     result = {
+    #         # "text": '',
+    #         "progress": 1,
+    #         "finished": "done"
+    #     }
+    #     data = f'event: message\nretry: 15000\ndata:{json.dumps(result)}\n\n'
+    #     # send email
+    #     if vtt_file.exists():
+    #         try:
+    #             notify_vtt_finished(user, audio_file.name)
+    #         except Exception as e:
+    #             print(str(e))
+    #     yield data
+    # return StreamingResponse(event_stream(), media_type='text/event-stream;charset=utf-8')
 
 
 def get_audios(user):

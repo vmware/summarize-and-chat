@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from fastapi import APIRouter
 from fastapi import Depends, UploadFile, Form
 from langchain.schema import Document
@@ -19,7 +22,7 @@ from src.model.data_model import Content,Question,Format,Length,Template
 
 config = _env.get_server_values()
 llm_config = _env.get_llm_values()
-modelName = llm_config['SUMMARIZE_MODEL']
+modelName, modelValue = _env.get_default_model() 
 
 router = APIRouter(
     prefix="/api/v1"

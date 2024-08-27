@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 import concurrent.futures
 from queue import Queue
 from werkzeug.utils import secure_filename
@@ -15,62 +18,6 @@ ACTIVE_TASKS = []
 thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=5)
 
 config = _env.get_server_values()
-
-# def process_task(audio_path: Path, vtt_path: Path, user: str):
-#     global TASK_QUEUE, ACTIVE_TASKS
-#     try:
-#         logger.info(f'---audio to vtt----{audio_path}---{user}')
-#         if str(audio_path) not in ACTIVE_TASKS:
-#             if not vtt_path.exists():
-#                 ACTIVE_TASKS.append(str(audio_path))
-#                 # model_size = "large-v2"
-#                 model_size = "small"
-#                 # compute_type: int8_float16, int8
-#                 model = WhisperModel(model_size, device="cpu", compute_type="int8", download_root="./cache")
-#                 # local need manual download huggingface model to local
-#                 # model = WhisperModel(model_size, device="cpu", compute_type="int8",cpu_threads=4,num_workers=4,download_root="D:\\code\\summarization-server\\DC")
-#                 # filter out parts of the audio without speech
-#                 segments, info = model.transcribe(str(audio_path), vad_filter=True)
-#                 # audio time
-#                 sound = AudioSegment.from_file(str(audio_path))
-#                 audio_time = len(sound) / 1000
-#                 part = 0
-#                 progress = 0
-#                 vtt_process_text = Path(str(vtt_path).replace('.vtt', '.txt'))
-#                 vtt = 'WEBVTT\n\n'
-#                 for segment in segments:
-#                     duration = f"{convert_seconds_to_hms(segment.start)} --> {convert_seconds_to_hms(segment.end)}\n"
-#                     result = "{:.2f}".format(round(segment.end / audio_time, 2))
-#                     progress = float(result)
-#                     if progress > 1:
-#                         progress = 1
-#                     text = segment.text.strip() + '\n\n'
-#                     part += 1
-#                     line = str(part) + "\n" + duration + text
-#                     vtt += line
-
-#                     # write process info
-#                     with open(str(vtt_process_text), 'w', encoding="utf-8") as file:
-#                         file.write(str(progress))
-
-#                 # write vtt
-#                 with open(str(vtt_path), 'w', encoding="utf-8") as file:
-#                     file.write(vtt)
-
-#                 # delete process txt
-#                 vtt_process_text.unlink()
-#                 # send email and create vtt file index
-#                 if vtt_path.exists():
-#                     try:
-#                         notify_vtt_finished(user, audio_path.name)
-#                         pgvectorDB.vector_index(vtt_path.name, user)
-#                     except Exception as e:
-#                         logger.error(str(e))
-#     except Exception as e:
-#         logger.error(str(e))
-#     finally:
-#         ACTIVE_TASKS.remove(str(audio_path))
-
 
 def submit_task(audio_path: Path, vtt_path: Path, user: str):
     global TASK_QUEUE, ACTIVE_TASKS

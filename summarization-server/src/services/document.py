@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from src.services.vllm import LCCustomLLM
 from src.config import logger
 from langchain.prompts import PromptTemplate
@@ -31,7 +34,6 @@ async def stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_
     if len(split_docs) > 1:
         sem = asyncio.Semaphore(llm_config['LLM_BATCH_SIZE'])
         tasks = [LCCustomLLM.async_generate(map_chain, t.page_content, chunk_prompt, sem) for t in split_docs]
-        print(f"doc stage1 task length----{len(tasks)}")
         resp = await asyncio.gather(*tasks)
         for r in resp:
             stage1 += f"{r}\n"
@@ -44,7 +46,7 @@ async def stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_
 async def stage2_summarize(stage1, chunk_size, chunk_overlap, prompt, model_name, temperature):
     modelDict = _env.get_model_by_name(model_name)
     max_token = int(modelDict.get("max_token"))
-    
+
     docs = [Document(page_content=stage1)]
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
@@ -83,8 +85,8 @@ async def summarize_docs(docs, chunk_size, chunk_overlap, chunk_prompt, final_pr
                          stream_mode=True):
     modelDict = _env.get_model_by_name(model)
     max_token = int(modelDict.get("max_token"))
+    
     final_context = await stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model, temperature)
-
     if LCCustomLLM.tokens(final_context) > max_token:
         final_context = await stage2_summarize(final_context, chunk_size, chunk_overlap, final_prompt, model, temperature)
     # format and length parameter just use to controller final summary

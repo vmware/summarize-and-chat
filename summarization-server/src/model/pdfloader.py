@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 """Module contains common parsers for PDFs."""
 from typing import List, Iterator
 
@@ -5,7 +8,6 @@ from langchain.document_loaders.base import BaseBlobParser
 from langchain.document_loaders.blob_loaders import Blob
 from langchain.document_loaders.pdf import BasePDFLoader
 from langchain.schema import Document
-
 
 # PDF parser by PDFMiner lib
 # Langchain implementation has no page info, just return all pdf content as long string

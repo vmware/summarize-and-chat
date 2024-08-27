@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from fastapi import APIRouter, Depends
 from pathlib import Path
 

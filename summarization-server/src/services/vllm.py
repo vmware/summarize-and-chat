@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun, AsyncCallbackManagerForLLMRun
 from langchain.schema import Document
@@ -18,7 +21,7 @@ from src.utils.env import _env
 
 config = _env.get_llm_values()
 qaModel = config['QA_MODEL']
-sumModel = config['SUMMARIZE_MODEL']
+defaultModel, modelValue = _env.get_default_model() 
 
 # llm_completion_callback = LLMCompletionCallback()
 
@@ -54,7 +57,7 @@ def chat_completions(model: str, prompt: str, system_config: str, max_tokens: in
             {"role": "system", "content": system_config},
             {"role": "user", "content": prompt},
         ]
-    print(f'messages:{messages}')
+    # print(f'messages:{messages}')
     response = client.chat.completions.create(model=model,
                                               messages=messages,
                                               stream=stream,
@@ -66,7 +69,7 @@ def chat_completions(model: str, prompt: str, system_config: str, max_tokens: in
 
 # langchain custom LLM
 class LCCustomLLM(LLM):
-    model_name: str = sumModel
+    model_name: str = defaultModel
     temperature: float = 0
 
     @property
@@ -156,8 +159,7 @@ class LCCustomLLM(LLM):
 
 # llama_index custom LLM use for chat with document
 class LocalLLM(CustomLLM):
-    context_window: int = config['QA_MODEL_MAX_TOKEN_LIMIT']
-    print('---llama_index context_window---', context_window)
+    context_window: int =  config['QA_MODEL_MAX_TOKEN_LIMIT']
     num_output: int = config['MAX_COMPLETION']
     model_name: str = qaModel
     dummy_response: str = "My response"
@@ -223,7 +225,6 @@ def call_stream(prompt: str,
                 temperature: float = 0,
                 stream: bool = True):
     response = ''
-    print('---call llm---')
     try:
         response = completions(prompt=prompt,
                                model=model,

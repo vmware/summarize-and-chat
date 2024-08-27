@@ -11,8 +11,38 @@ The project includes three components:
 Building requires:
 
 - [Angular CLI = 16.1.4.](https://github.com/angular/angular-cli)
-- [Python  = 3.10+] (https://www.python.org/downloads/)
-- [PGVector = 12+](https://github.com/pgvector/pgvector)
+- [Python = 3.10+] (https://www.python.org/downloads/)
+- [Postgres = 12+](https://github.com/pgvector/pgvector)
+
+
+## Before You Start
+
+### Running LLM inference engine on vLLM
+vLLM is a popular open-source LLM inference engine. To run an open-source LLM on vLLM in OpenAI-compatible mode, make sure you have an A100 (40GB) GPU available at the OS-level and CUDA 12.1 installed. Then you need to run the following commands to make the LLM service available from http://localhost:8010/v1:
+
+```bash
+      # (Optional) Create a new conda environment.
+      conda create -n vllm-env python=3.9 -y
+      conda activate vllm-env
+
+      # Install vLLM with CUDA 12.1.
+      pip install vllm
+
+      # Serve the zephyr-7b-alpha LLM
+      python -m vllm.entrypoints.openai.api_server --model HuggingFaceH4/zephyr-7b-alpha --port 8010 --enforce-eager
+```
+
+### Running PGVector
+The vector store is implemented using the PGVector extension of PostgreSQL (v12).
+
+```bash
+$ cd summarization-server/pgvector
+$ run the `docker compose up -d` script to launch a PGVector instance using Docker Compose.
+
+The `docker-compose.yaml` file defines the PostgreSQL configuration, which you can customize according to your preferences.
+
+You can execute the run_pgvector.sh script to pull and launch a PostgreSQL + PGVector Docker container. Once up and running, the DB engine will be available from localhost:5432
+```
 
 ## Installation
 
@@ -83,21 +113,22 @@ okta:
 llm:
   LLM_API: "your LLM api server" # https://api.openai.com/v1"
   AUTH_KEY: "your api key"
-  QA_MODEL: "default QA model" #mistralai/Mixtral-8x7B-Instruct-v0.1"
+  QA_MODEL: "default QA model" # mistralai/Mixtral-8x7B-Instruct-v0.1"
   QA_MODEL_MAX_TOKEN_LIMIT: "max token limit for QA model" #30000
-  SUMMARIZE_MODEL: "default model for summarization task" #"meta-llama/Meta-Llama-3-70B-Instruc"
-  EMBEDDING_MODEL: "embedding model" #"Salesforce/SFR-Embedding-Mistral"
-  VECTOR_DIM: "embedding model vector dimension" #4096
+  EMBEDDING_MODEL: "embedding model" # "Salesforce/SFR-Embedding-Mistral"
+  VECTOR_DIM: "embedding model vector dimension" # 4096 
+  SIMIL_TOP_K: 10 # Retrieve TOP_K most similar docs from the PGVector store
+  RERANK_ENABLED: True
+  RERANK_MODEL: "BAAI/bge-reranker-large" # re-ranking model
+  RERANK_TOP_N: 5 # Rerank and pick the 5 most similar docs
   MAX_COMPLETION: "max tokens of completion for each query" #700
-  CHUNK_SIZE: "default chunk size" #512
+  CHUNK_SIZE: "default chunk size" # 512
   CHUNK_OVERLAP: "default chunk overlap" # 20
-  NUM_QUERIES: "default number of queries" #10
-  TOP_K: "retriever top k docs" # 5
-  LLM_BATCH_SIZE: "batch size for LLM" # 1
-  AUDIO_API: "stt-service URL" #"http://localhost:9000/api/v1"
+  NUM_QUERIES: "default number of queries" # 3
+  LLM_BATCH_SIZE: "batch size for LLM" # 5
 ```
 
-You also need to specify the available LLMs in the [summarization-server/src/config/models.json](./summarization-server/src/config/models.json).
+You also need to specify the available LLMs for the summarization task in the [summarization-server/src/config/models.json](./summarization-server/src/config/models.json).
 
 ```json
 {
@@ -150,6 +181,14 @@ server:
   PDF_READER: pypdf # default PDF parser
   FILE_PATH:  "../data"
   RELOAD: False
+```
+
+- If you are want to enable Speech-to-text function, you need to set stt configurations in the [summarization-server/src/config/config.yaml](./summarization-server/src/config/config.yaml) file.
+
+```yaml
+stt:
+  STT_API: "http://localhost:9000/api/v1" # STT-server URL
+  AUTH_KEY: "your STT api auth key if the auth is enabled"
 ```
 
 - If you are want to enable email notifications, you need to set email server configurations in the [summarization-server/src/config/config.yaml](./summarization-server/src/config/config.yaml) file.

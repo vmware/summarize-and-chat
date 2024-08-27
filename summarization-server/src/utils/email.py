@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
@@ -33,7 +36,7 @@ def notify_vtt_finished(user, audio):
     htmlTemplate = htmlTemplate.replace("${audio}", audio)
     htmlTemplate = htmlTemplate.replace("${link}", f"{config['SUMMARIZER_URL']}/nav/files")
     subject = "Audio convert to vtt finished"
-    toAddresses = f'{user}@vmware.com'
+    toAddresses = user
     return send_email(subject, htmlTemplate, toAddresses)
 
 
@@ -52,5 +55,5 @@ def notify_summary_finished(user, document, subject=None):
         htmlTemplate = htmlTemplate.replace("${link}", f"{config['SUMMARIZER_URL']}/nav/files")
         if not subject:
             subject = "Document Summary Completed"
-        toAddresses = f'{user}@vmware.com'
+        toAddresses = user
         return send_email(subject, htmlTemplate, toAddresses)

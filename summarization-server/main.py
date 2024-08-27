@@ -1,7 +1,9 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import uvicorn
-# import asyncio
 from fastapi import FastAPI, BackgroundTasks
 from starlette.middleware.cors import CORSMiddleware
 

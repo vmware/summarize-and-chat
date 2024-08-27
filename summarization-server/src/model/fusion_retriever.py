@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from llama_index.core.schema import QueryBundle,NodeWithScore
 from llama_index.core.retrievers import BaseRetriever
 from typing import Any, List
@@ -67,7 +70,6 @@ def fuse_results(results_dict, similarity_top_k: int = 3):
         reranked_nodes[-1].score = score
     return reranked_nodes[:similarity_top_k]
 
-
 class FusionRetriever(BaseRetriever):
     """Ensemble retriever with fusion."""
 
@@ -84,7 +86,7 @@ class FusionRetriever(BaseRetriever):
     def _retrieve(self, query_bundle: QueryBundle) -> List[NodeWithScore]:
         """Retrieve."""
         start = time.time()
-        # Temporarily not used
+        # Not used for now because it takes too long to generate queries.
         # queries = generate_queries(query_bundle.query_str)
         # logger.info(f'-----queries-----{queries}')
         # logger.info(f'-----generate same queries spend time-----{time.time()-start}')

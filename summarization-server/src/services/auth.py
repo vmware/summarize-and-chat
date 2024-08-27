@@ -1,10 +1,12 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from src.config import logger
 from fastapi import HTTPException, Depends
 from starlette.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from src.utils.env import _env
 from src.model.common import *
-# from src.services.api_auth import apiAuth
 import time
 
 from okta_jwt.jwt import validate_token as validate_locally

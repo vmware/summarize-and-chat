@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 import asyncio
 from langchain.chains import LLMChain
@@ -84,7 +87,6 @@ async def summarize_meeting(docs, chunk_size, chunk_overlap, chunk_prompt, final
                             ):
     modelDict = _env.get_model_by_name(model_name)
     max_token = int(modelDict.get("max_token"))
-    print(max_token)
 
     final_context = await stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_name, temperature)
     if LCCustomLLM.tokens(final_context) > max_token:

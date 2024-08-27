@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 import os, time, yaml, json
 from enum import Enum
 
@@ -66,10 +69,10 @@ class environment:
         return self.configfile.content
     
     
-    def get_auth_values(self, refresh=False):
-        auth = self.get_config('auth', refresh=refresh)
-        if auth:
-            return self.get_children(auth, ["API_AUTH_URL", "AUTH_KEY"])
+    def get_stt_values(self, refresh=False):
+        stt = self.get_config('stt', refresh=refresh)
+        if stt:
+            return self.get_children(stt, ["STT_API", "AUTH_KEY"])
         return {}
 
     def get_okta_values(self, refresh=False):
@@ -80,7 +83,7 @@ class environment:
     def get_llm_values(self, refresh=False):
         llm = self.get_config('llm', refresh=refresh)
         if llm:
-            return self.get_children(llm, ["LLM_API", "AUTH_KEY", "QA_MODEL", "QA_MODEL_MAX_TOKEN_LIMIT", "SUMMARIZE_MODEL", "EMBEDDING_MODEL", "VECTOR_DIM", "MAX_COMPLETION", "CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "TOP_K", "LLM_BATCH_SIZE", "AUDIO_API"])
+            return self.get_children(llm, ["LLM_API", "AUTH_KEY", "QA_MODEL", "QA_MODEL_MAX_TOKEN_LIMIT", "EMBEDDING_MODEL", "VECTOR_DIM", "MAX_COMPLETION", "CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "SIMIL_TOP_K", "LLM_BATCH_SIZE", "RERANK_ENABLED", "RERANK_MODEL", "RERANK_TOP_N"])
         
     def get_db_values(self, refresh=False):
         db = self.get_config('database', refresh=refresh)
@@ -153,6 +156,12 @@ class environment:
     
     def get_model_by_name(self, name):
         return self.model_dict.get(name)
+    
+    def get_default_model(self):
+        first_key, first_value = list(self.model_dict.items())[0]
+        # first_value = list(self.model_dict.values())[0]
+        return first_key, first_value
+
             
 _env = environment()
 

@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 import pickle, json
 from pathlib import Path
 from fastapi.responses import StreamingResponse

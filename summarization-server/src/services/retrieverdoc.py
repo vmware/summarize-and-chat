@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 import json
 from werkzeug.utils import secure_filename
 from pathlib import Path
@@ -43,9 +46,6 @@ def questions(doc: str, user: str):
 async def llmaindex_rag(query: str, user: str, doc: str):
     route = route_query(query)
     if re.search(r'RAG_SEARCH', route):
-        # Comment out the agent and only use the vector search for now
-        # choose_tools = agent(query)
-        choose_tools = {"choice": 1}
         doc = secure_filename(doc)
         # handle audio file, read the vtt file to chat
         if validate_audio(doc):
@@ -57,28 +57,14 @@ async def llmaindex_rag(query: str, user: str, doc: str):
         text_splitter = SentenceSplitter(chunk_size=llm_config['CHUNK_SIZE'], chunk_overlap=llm_config['CHUNK_OVERLAP'])
         start = time.time()
         
-        if choose_tools['choice'] == 1:
-            response_mode = 'compact'
-            index = pgvectorDB.get_index(doc, user)
-            index_retriever = pgvectorDB.retriever(doc, user)
-        # else:
-        #     response_mode = 'tree_summarize'
-        #     index = summary_index(doc, user)
-        #     index_retriever =index.as_retriever(
-        #         response_mode=response_mode,
-        #         similarity_top_k=llm_config['TOP_K'],
-        #     )
-
+        response_mode = 'compact'
+ 
+        index_retriever = pgvectorDB.retriever(doc, user, llm_config['SIMIL_TOP_K'], llm_config['RERANK_ENABLED'], llm_config['RERANK_MODEL'], llm_config['RERANK_TOP_N'])
         logger.info(f'-----load index spend time--------{time.time()-start}')
-        # start = time.time()
-        # bm25_retriever = BM25Retriever.from_defaults(
-        #     index=index, similarity_top_k = llm_config['TOP_K']
-        # )
-        # logger.info(f'-----load bm25 index spend time--------{time.time() - start}')
-        # retriever = FusionRetriever(retrievers=[index_retriever, bm25_retriever],
-        #                             similarity_top_k=llm_config['TOP_K'])
-
-        retriever = FusionRetriever(retrievers=index_retriever, similarity_top_k=llm_config['TOP_K'])
+        
+        start = time.time()
+        retriever = FusionRetriever(retrievers=[index_retriever], similarity_top_k=llm_config['SIMIL_TOP_K'])
+        
         vector_query_engine = RetrieverQueryEngine.from_args(
             llm=llm,
             transformations=[text_splitter],
@@ -88,7 +74,7 @@ async def llmaindex_rag(query: str, user: str, doc: str):
             text_qa_template=get_text_qa_template(modelName),
             refine_template=get_refine_template(modelName),
             summary_template=get_summary_template(modelName),
-            similarity_top_k=llm_config['TOP_K'],
+            similarity_top_k=llm_config['SIMIL_TOP_K'],
             streaming=True
         )
         result = vector_query_engine.query(query)

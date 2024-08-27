@@ -5,18 +5,22 @@ This repository contains the source code for the summarize-and-chat project. Thi
 Core features include:
 
 - Support a range of document lengths and formats (PDF, DOCX, PPTX, TXT, VTT, VTT, Audio) and accommodate various types of content
+- Support open source LLMs on OpenAI-compatible LLM inference engine
+- An intuitive user interface for file upload, summary generation, and chat
 - Summarization:
   - Insert, paste or upload your files & preview files
   - Pick the way you want to summarize (allow user to provide custom prompts, chunk size, page range for docs or time range for audio)
   - Adjust your summary length
   - Get your summary in seconds and download your summary
 - Chat with your doc - ask any question based on your doc for enhanced analysis
-  - Click Chat icon on the top menu to chat with your doc
-  - Pick one of the auto-generated questions from the doc or enter your own question
+  - Auto-generated questions from the doc
+  - Get the answer with the source in seconds
 - Insight Analysis
   - Select two or more docs
   - Write the prompt to compare or identify the insights from the selected docs
-  
+- Speech-to-text convention 
+- Support PDF parsers: PyPDF, PDFMiner, PyMUPDF  
+- APIs - Cohere's summarize API compatible 
 <br>
 
 ## Disclaimer
@@ -27,8 +31,8 @@ Be aware that LLMs pose inherent vulnerabilities and risks, as illustrated by th
 Summarize-and-chat project includes three components:
 
 - summarization-client: Angular/Clarity web application for content management, summary generation and chat.
-- summarization-server: FastAPI gateway server to manage core application functions including access control, document ingestion pipeline,summarization with Map Reduce provided by [LangChain](https://python.langchain.com/v0.2/docs/introduction/), and improved RAG with [LlamaIndex Fusion Retriever](https://docs.llamaindex.ai/en/stable/examples/retrievers/reciprocal_rerank_fusion/).
-- stt-service (speech-to-text): A microservice to convert audio to text using OpenAI’s faster-whisper API
+- summarization-server: FastAPI gateway server to manage core application functions including access control, document ingestion pipeline,summarization with [LangChain](https://python.langchain.com/v0.2/docs/introduction/), and improved RAG with [LlamaIndex](https://docs.llamaindex.ai/en/stable/) from a PGVector Store.
+- stt-service (speech-to-text): A microservice to convert audio to text using OpenAI’s [faster-whisper](https://github.com/SYSTRAN/faster-whisper)
 
 ## Quick start
 

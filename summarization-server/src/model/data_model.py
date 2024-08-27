@@ -1,3 +1,6 @@
+# Copyright 2023-2024 Broadcom
+# SPDX-License-Identifier: Apache-2.0
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from enum import Enum
@@ -5,6 +8,7 @@ from enum import Enum
 from src.utils.env import _env
 
 llm_config = _env.get_llm_values()
+modelName, modelVal = _env.get_default_model() 
 
 class Question(BaseModel):
     q: str
@@ -57,11 +61,11 @@ class Content(BaseModel):
     text: str
     length: Length = Length.auto  # One of short, medium, long, or auto defaults to auto
     format: Format = Format.auto  # One of paragraph, bullets, or auto, defaults to auto
-    model: str = llm_config['SUMMARIZE_MODEL'] # ModelName.Llama3_70b
+    model: str = modelName 
     extractiveness: Extractiveness = Extractiveness.auto  # One of high, medium, or low, defaults to auto
     temperature: float = Field(default=0, ge=0, le=1)  # Between 0 and 1, defaults to 0
     additional_command: str = Field(default='')
-    chunk_size: int = Field(default=1000, ge=1000, le=30000)
+    chunk_size: int = Field(default=1000, ge=1000, le=128000)
     chunk_overlap: int = Field(default=100, ge=100, le=300)
     chunk_prompt: Optional[str] = None
     final_prompt: Optional[str] = None
@@ -71,9 +75,9 @@ class Multi(BaseModel):
     file: List[str]
     length: Length = Length.auto
     format: Format = Format.auto
-    model: str = llm_config['SUMMARIZE_MODEL'] #ModelName.Llama3_70b
+    model: str = modelName 
     temperature: float = Field(default=0, ge=0, le=1)
-    chunk_size: int = Field(default=1000, ge=1000, le=30000)
+    chunk_size: int = Field(default=1000, ge=1000, le=128000)
     chunk_overlap: int = Field(default=100, ge=100, le=300)
     prompt: str
 

@@ -19,16 +19,16 @@ from llama_index.core.llms.callbacks import llm_completion_callback
 from src.config import logger
 from src.utils.env import _env
 
-config = _env.get_llm_values()
-qaModel = config['QA_MODEL']
-defaultModel, modelValue = _env.get_default_model() 
+llm_config = _env.get_llm_values()
+llm_client = OpenAI(api_key = llm_config['API_KEY'], base_url = llm_config['API_BASE'])
+defaultModel, modelValue = _env.get_default_model()
+model_name: str = defaultModel
 
-# llm_completion_callback = LLMCompletionCallback()
+qa_config = _env.get_qamodel_values()
+qa_client = OpenAI(api_key = qa_config['API_KEY'], base_url = qa_config['API_BASE'])
 
-client = OpenAI(api_key = config['AUTH_KEY'], base_url = config['LLM_API'])
-
-def completions(model: str, prompt: str, max_tokens: int = config['MAX_COMPLETION'],
-                temperature: float = 0, stream: bool = False):
+def completions(client, model: str, prompt: str, max_tokens: int = 1024,
+                temperature: float = 0, stream: bool = True):
     try:
         response = client.completions.create(prompt=prompt,
                                             model=model,
@@ -40,7 +40,7 @@ def completions(model: str, prompt: str, max_tokens: int = config['MAX_COMPLETIO
         logger.error(f'----request error------{e}')
 
 # use chat/completion  endpoint, mistral model not support system role
-def chat_completions(model: str, prompt: str, system_config: str, max_tokens: int = config['MAX_COMPLETION'],
+def chat_completions(client, model: str, prompt: str, system_config: str, max_tokens: int = 1024,
                      temperature: float = 0, stream: bool = False):
     if model.startswith('mistral'):
         prefix = "<|im_start|>"
@@ -57,19 +57,18 @@ def chat_completions(model: str, prompt: str, system_config: str, max_tokens: in
             {"role": "system", "content": system_config},
             {"role": "user", "content": prompt},
         ]
-    # print(f'messages:{messages}')
     response = client.chat.completions.create(model=model,
                                               messages=messages,
                                               stream=stream,
                                               max_tokens=max_tokens,
                                               temperature=temperature)
-    # result = response.choices[0].message.content
     return response
 
 
 # langchain custom LLM
 class LCCustomLLM(LLM):
     model_name: str = defaultModel
+    # model_name: str = config['MODEL']
     temperature: float = 0
 
     @property
@@ -85,9 +84,10 @@ class LCCustomLLM(LLM):
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
         try:
-            response = completions(prompt=prompt,
+            response = completions(client=llm_client,
+                                   prompt=prompt,
                                    model=self.model_name,
-                                   max_tokens=config['MAX_COMPLETION'],
+                                   max_tokens=llm_config['MAX_COMPLETION'],
                                    temperature=self.temperature)
             result = response.choices[0].text
         except Exception as e:
@@ -105,9 +105,10 @@ class LCCustomLLM(LLM):
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
         try:
-            response = completions(prompt=prompt,
+            response = completions(client=llm_client,
+                                   prompt=prompt,
                                    model=self.model_name,
-                                   max_tokens=config['MAX_COMPLETION'],
+                                   max_tokens=llm_config['MAX_COMPLETION'],
                                    temperature=self.temperature)
             result = response.choices[0].text
         except Exception as e:
@@ -159,9 +160,10 @@ class LCCustomLLM(LLM):
 
 # llama_index custom LLM use for chat with document
 class LocalLLM(CustomLLM):
-    context_window: int =  config['QA_MODEL_MAX_TOKEN_LIMIT']
-    num_output: int = config['MAX_COMPLETION']
-    model_name: str = qaModel
+    # config = _env.get_qamodel_values()
+    context_window: int =  qa_config['MAX_TOKEN']
+    num_output: int = qa_config['MAX_COMPLETION']
+    model_name: str = qa_config['MODEL']
     dummy_response: str = "My response"
 
     @property
@@ -178,11 +180,12 @@ class LocalLLM(CustomLLM):
         try:
             # logger.info(f'---request-----{prompt}')
             start = time.time()
-            response = completions(prompt=prompt,
-                                 model=self.model_name,
-                                 stream=False,
-                                 max_tokens=self.num_output,
-                                 temperature=0)
+            response = completions(client=qa_client,
+                                    prompt=prompt,
+                                    model=self.model_name,
+                                    stream=False,
+                                    max_tokens=self.num_output,
+                                    temperature=0)
             result = response.choices[0].text
             logger.info(f'---call llm spend time-------{time.time() - start}')
         except Exception as e:
@@ -199,7 +202,8 @@ class LocalLLM(CustomLLM):
 
         def gen() -> CompletionResponseGen:
             text = ""
-            for response in completions(prompt=prompt,
+            for response in completions(client=qa_client, 
+                                        prompt=prompt,
                                         model=self.model_name,
                                         stream=True,
                                         max_tokens=self.num_output,
@@ -219,14 +223,16 @@ class LocalLLM(CustomLLM):
 
 
 # generate the stream response
-def call_stream(prompt: str,
-                model: str = qaModel,
-                max_tokens: int = config['MAX_COMPLETION'],
+def call_stream(client,
+                prompt: str,
+                model: str = "mistralai/Mixtral-8x7B-Instruct-v0.1",
+                max_tokens: int = 1024,
                 temperature: float = 0,
                 stream: bool = True):
     response = ''
     try:
-        response = completions(prompt=prompt,
+        response = completions(client=client,
+                               prompt=prompt,
                                model=model,
                                stream=stream,
                                max_tokens=max_tokens,

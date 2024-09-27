@@ -3,6 +3,8 @@
 
 import pickle, json
 from pathlib import Path
+from openai import OpenAI
+
 from fastapi.responses import StreamingResponse
 from langchain.document_loaders import UnstructuredWordDocumentLoader, PyPDFLoader, TextLoader, UnstructuredPowerPointLoader
 
@@ -19,6 +21,7 @@ from src.utils.format import response_format
 
 server_config = _env.get_server_values()
 llm_config = _env.get_llm_values()
+client = OpenAI(api_key = llm_config['API_KEY'], base_url = llm_config['API_BASE'])
 
 def meta_info(filename, user):
     meta_str = f'document:{filename}  '
@@ -90,7 +93,7 @@ async def multi_document_analyze(data, user):
     temperature = data.temperature
     model = data.model
     def event_stream():
-        response = call_stream(final_prompt, model=model, temperature=temperature)
+        response = call_stream(client,final_prompt, model=model, temperature=temperature)
         for chunk in response:
             msg = {
                 "text": chunk.choices[0].text,

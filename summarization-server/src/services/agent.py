@@ -2,15 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-
-from src.services.vllm import LocalLLM, call_stream
+from src.services.vllm import LocalLLM
 from src.config import logger
 from src.utils.env import _env
 from src.config.prompt import mistral_route_template_str
 
 server_config = _env.get_server_values()
-llm_config = _env.get_llm_values()
-modelName = llm_config['QA_MODEL']
+llm_config = _env.get_qamodel_values()
+modelName = llm_config['MODEL']
 
 def marshal_llm_to_json(output: str) -> str:
     """

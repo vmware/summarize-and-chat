@@ -24,7 +24,7 @@ def get_connection(pg_config):
     return conn
 
 def create_db():
-    pg_config = _env.get_pgvector_values()
+    pg_config = _env.get_db_values()
     try:
         conn = get_connection(pg_config)
         conn.autocommit = True
@@ -46,6 +46,7 @@ def create_db():
             """)
         cursor.close()
         
+        cursor = conn.cursor()
         cursor.execute("""CREATE TABLE IF NOT EXISTS chat_doc(
             id SERIAL PRIMARY KEY,
             email VARCHAR (100)  NOT NULL,
@@ -55,6 +56,18 @@ def create_db():
             create_time TIMESTAMP default now());
             """)
         cursor.close()
+
+        cursor = conn.cursor()
+        cursor.execute("""CREATE TABLE IF NOT EXISTS summarizer_user(
+            id SERIAL PRIMARY KEY,
+            fname VARCHAR (100)  NOT NULL,
+            lname VARCHAR (100)  NOT NULL,
+            email VARCHAR (100)  NOT NULL,
+            create_time TIMESTAMP default now(),
+            UNIQUE (email));
+            """)
+        cursor.close()
+
         print("Database setup completed.")
     except Exception as e:
         # Catch any other unexpected exceptions

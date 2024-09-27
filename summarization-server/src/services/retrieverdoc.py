@@ -7,10 +7,10 @@ from pathlib import Path
 import os, time, re
 
 from fastapi.responses import StreamingResponse
+from openai import OpenAI
 
 # from langchain.embeddings import HuggingFaceEmbeddings
 from llama_index.core.node_parser import SentenceSplitter
-from llama_index.retrievers.bm25 import BM25Retriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 
 from src.config.prompt import mistral_route_template_str, mistral_direct_answer_template_str
@@ -27,13 +27,15 @@ from src.db.database import ChatDB
 from src.services.agent import route_query
 
 server_config = _env.get_server_values()
-llm_config = _env.get_llm_values()
+qa_config = _env.get_qamodel_values()
+embedder_config = _env.get_embedder_values()
+reranker_config = _env.get_reranker_values()
 pg_config = _env.get_db_values()
 
 chatDB = ChatDB(pg_config)
 
-modelName = llm_config['QA_MODEL']
-
+modelName = qa_config['MODEL']
+client = OpenAI(api_key = qa_config['API_KEY'], base_url = qa_config['API_BASE'])
 
 def questions(doc: str, user: str):
     filepath = Path(f"{server_config['FILE_PATH']}/{user}/{doc}")
@@ -53,17 +55,16 @@ async def llmaindex_rag(query: str, user: str, doc: str):
             doc = f"{base_name}.vtt"
             
         llm = LocalLLM(model_name = modelName, context_window=30000)
-        embed_model = EmbeddingModel(model_name=llm_config['EMBEDDING_MODEL'], embed_batch_size=llm_config['LLM_BATCH_SIZE'])
-        text_splitter = SentenceSplitter(chunk_size=llm_config['CHUNK_SIZE'], chunk_overlap=llm_config['CHUNK_OVERLAP'])
+        embed_model, embedding_size = _env.get_embedder()
+        # embed_model = EmbeddingModel(model_name=embedder_config['MODEL'], embed_batch_size=embedder_config['BATCH_SIZE'])
+        text_splitter = SentenceSplitter(chunk_size=qa_config['CHUNK_SIZE'], chunk_overlap=qa_config['CHUNK_OVERLAP'])
         start = time.time()
         
         response_mode = 'compact'
- 
-        index_retriever = pgvectorDB.retriever(doc, user, llm_config['SIMIL_TOP_K'], llm_config['RERANK_ENABLED'], llm_config['RERANK_MODEL'], llm_config['RERANK_TOP_N'])
-        logger.info(f'-----load index spend time--------{time.time()-start}')
+        re_ranker = _env.get_rerank_model()
         
-        start = time.time()
-        retriever = FusionRetriever(retrievers=[index_retriever], similarity_top_k=llm_config['SIMIL_TOP_K'])
+        retriever = pgvectorDB.retriever(doc, user, qa_config['SIMIL_TOP_K'], re_ranker)
+        logger.info(f'-----load index spend time--------{time.time()-start}')
         
         vector_query_engine = RetrieverQueryEngine.from_args(
             llm=llm,
@@ -74,7 +75,7 @@ async def llmaindex_rag(query: str, user: str, doc: str):
             text_qa_template=get_text_qa_template(modelName),
             refine_template=get_refine_template(modelName),
             summary_template=get_summary_template(modelName),
-            similarity_top_k=llm_config['SIMIL_TOP_K'],
+            similarity_top_k=qa_config['SIMIL_TOP_K'],
             streaming=True
         )
         result = vector_query_engine.query(query)
@@ -96,7 +97,7 @@ async def llmaindex_rag(query: str, user: str, doc: str):
         return StreamingResponse(event_stream(), media_type='text/event-stream;charset=utf-8')
     else:
         prompt = mistral_direct_answer_template_str.format(USER_QUERY=query)
-        result = call_stream(prompt=prompt, model=modelName, temperature=0)
+        result = call_stream(client, prompt=prompt, model=modelName, temperature=0)
         def event_stream():
             answer = ''
             for chunk in result:

@@ -18,11 +18,13 @@ from src.services.chat import answer
 from src.services.document import summarize_docs
 from src.services.meeting import summarize_meeting
 from src.model.file_type import get_file_type, save_file, validate_audio, validate_doc, vtt_file
-from src.model.data_model import Content,Question,Format,Length,Template
+from src.model.common import Format,Length,Template
+from src.model.data_model import Content,Question
 
 config = _env.get_server_values()
 llm_config = _env.get_llm_values()
 modelName, modelValue = _env.get_default_model() 
+print('modelName=', modelName)
 
 router = APIRouter(
     prefix="/api/v1"
@@ -46,7 +48,7 @@ async def summarize_content(c: Content, token=Depends(verify_token)):
 
 @router.post("/summarize-doc")
 async def summarize_document(doc: str = Form(),
-                             chunk_size: int = Form(ge=1000, le=30000),
+                             chunk_size: int = Form(ge=1000, le=128000),
                              chunk_overlap: int = Form(ge=100, le=300),
                              start_page: int = Form(default=1, ge=1),
                              end_page: int = Form(default=1000, ge=1),

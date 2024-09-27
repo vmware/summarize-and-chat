@@ -7,8 +7,10 @@ import psycopg2
 # from sqlalchemy import make_url
 
 from src.utils.env import _env
+from src.utils.auth_utils import encode_password
 from src.config import logger      
 from src.model.file_type import validate_audio
+from src.model.data_model import DBUser
 
 class Database:
     def __init__(self, config):
@@ -276,3 +278,87 @@ class ChatDB(Database):
                 cursor.close()
             if conn is not None:
                 conn.close()            
+
+class UserDB(Database):
+    def __init__(self, config): 
+       super().__init__(config)
+
+    def add_user(self, fname, lname, email, password):
+        try:
+            conn = self.connect()
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO summarizer_user(fname, lname, email, password) VALUES(%s, %s, %s, %s) RETURNING id;", (fname, lname, email, encode_password(password)))
+            new_id = cursor.fetchone()[0]
+            user = DBUser()
+            user.fname = fname
+            user.lname = lname
+            user.email - email
+            user.password = password
+            cursor.close()
+            return user
+        except psycopg2.Error as e:
+            # Catch any psycopg2-related exceptions
+            print(f"Error: {e.pgcode} - {e.pgerror}")
+            return None
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            return None
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    def get_user_by_email(self, email):
+        try: 
+            conn = self.connect()
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, fname, lname, email FROM summarizer_user where email = %s;", (email))
+            result = cursor.fetchall()
+            if result:
+                dbuser = result[0]
+                print(dbuser)
+                user = DBUser(fname=dbuser[1], lname=dbuser[2], email=dbuser[3], id=dbuser[0])
+                return user
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            return None
+        finally:
+            if cursor is not None:
+                cursor.close()
+            if conn is not None:
+                conn.close()
+
+    def delete_ruser(self, email):
+        try:
+            conn = self.connect()
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute("""DELETE from summarizer_user WHERE email = %s;""", (email))
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+        finally:
+            if cursor is not None:
+                cursor.close()
+            if conn is not None:
+                conn.close()
+
+    def get_users(self):
+        try:
+            conn = self.connect()
+            conn.autocommit = True
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM summarizer_user;")
+            result = cursor.fetchall()
+            if result:
+                return result
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(error)
+            return None
+        finally:
+            if cursor is not None:
+                cursor.close()
+            if conn is not None:
+                conn.close()

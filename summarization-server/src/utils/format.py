@@ -81,3 +81,4 @@ def response_format(origin_prompt:str, format:Format, length:Length):
 
     origin_prompt = origin_prompt + length_str + format_str
     return origin_prompt
+

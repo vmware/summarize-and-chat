@@ -30,4 +30,4 @@ async def retrieval_doc(data:Rag, token=Depends(verify_token)):
         return ErrorResponse('Sorry,we have changed embedding model, please delete your document and upload again.', 500)
     except Exception as e:
         logger.error(f'retrieval error------{str(e)}')
-        return ErrorResponse('Sorry,summarize server error, please ask the administrator for help!', 500)
+        return ErrorResponse('System error', 500)

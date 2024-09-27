@@ -4,6 +4,9 @@
 import os, time, yaml, json
 from enum import Enum
 
+from llama_index.postprocessor.nvidia_rerank import NVIDIARerank
+from llama_index.embeddings.nvidia import NVIDIAEmbedding
+
 class ENV(Enum):
     PROD = 'prod'
     STG = 'stg'
@@ -67,8 +70,7 @@ class environment:
         if refresh:
             self.configfile.read(refresh)
         return self.configfile.content
-    
-    
+
     def get_stt_values(self, refresh=False):
         stt = self.get_config('stt', refresh=refresh)
         if stt:
@@ -83,8 +85,23 @@ class environment:
     def get_llm_values(self, refresh=False):
         llm = self.get_config('llm', refresh=refresh)
         if llm:
-            return self.get_children(llm, ["LLM_API", "AUTH_KEY", "QA_MODEL", "QA_MODEL_MAX_TOKEN_LIMIT", "EMBEDDING_MODEL", "VECTOR_DIM", "MAX_COMPLETION", "CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "SIMIL_TOP_K", "LLM_BATCH_SIZE", "RERANK_ENABLED", "RERANK_MODEL", "RERANK_TOP_N"])
+            return self.get_children(llm, ["API_BASE", "API_KEY", "MODELS_JSON", "MODEL", "MAX_TOKEN", "MAX_COMPLETION", "BATCH_SIZE"])
         
+    def get_qamodel_values(self, refresh=False):
+        llm = self.get_config('qamodel', refresh=refresh)
+        if llm:
+            return self.get_children(llm, ["API_BASE", "API_KEY", "MODEL", "MAX_TOKEN", "MAX_COMPLETION", "CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "SIMIL_TOP_K"])
+
+    def get_embedder_values(self, refresh=False):
+        llm = self.get_config('embedder', refresh=refresh)
+        if llm:
+            return self.get_children(llm, ["API_BASE", "API_KEY", "MODEL", "VECTOR_DIM","BATCH_SIZE"])
+
+    def get_reranker_values(self, refresh=False):
+        llm = self.get_config('reranker', refresh=refresh)
+        if llm:
+            return self.get_children(llm, ["API_BASE", "API_KEY", "MODEL", "RERANK_TOP_N"])
+
     def get_db_values(self, refresh=False):
         db = self.get_config('database', refresh=refresh)
         if db:
@@ -93,7 +110,7 @@ class environment:
     def get_server_values(self, refresh=False):
         server = self.get_config('server', refresh=refresh)
         if server:
-            return self.get_children(server, ["HOST", "PORT", "RELOAD", "NUM_WORKERS", "PDF_READER", "FILE_PATH", "VECTOR_DB"])
+            return self.get_children(server, ["HOST", "PORT", "RELOAD", "NUM_WORKERS", "PDF_READER", "FILE_PATH", "VECTOR_DB", "RERANK_ENABLED"])
     
     def get_email_values(self, refresh=False):
         email = self.get_config('email', refresh=refresh)
@@ -162,6 +179,27 @@ class environment:
         # first_value = list(self.model_dict.values())[0]
         return first_key, first_value
 
+    def get_rerank_model(self):
+        reranker_config = self.get_reranker_values()
+        re_ranker = NVIDIARerank(
+            model=reranker_config['MODEL'],
+            base_url=reranker_config['API_BASE'],
+            api_key=reranker_config['API_KEY'],
+            top_n=reranker_config['RERANK_TOP_N'],
+            truncate="END",
+        )
+        return re_ranker
+
+    def get_embedder(self):
+        embedder_config = _env.get_embedder_values()
+        embed_model = NVIDIAEmbedding(
+            base_url=embedder_config['API_BASE'],
+            model=embedder_config['MODEL'],
+            embed_batch_size=embedder_config['BATCH_SIZE'],
+            truncate="END",
+        )
+        embedding_size = 1024
+        return embed_model, embedding_size
             
 _env = environment()
 

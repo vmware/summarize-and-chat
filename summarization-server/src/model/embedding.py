@@ -7,10 +7,9 @@ from src.config import logger
 from src.utils.env import _env
 from openai import OpenAI, AsyncOpenAI
 
-config = _env.get_llm_values()
-client = OpenAI(api_key=config['AUTH_KEY'], base_url=config['LLM_API'])
-aclient = AsyncOpenAI(api_key=config['AUTH_KEY'], base_url=config['LLM_API'])
-
+config = _env.get_embedder_values()
+client = OpenAI(api_key=config['API_KEY'], base_url=config['API_BASE'])
+aclient = AsyncOpenAI(api_key=config['API_KEY'], base_url=config['API_BASE'])
 
 def get_embedding(model_name: str, text: str) -> List[float]:
     try:

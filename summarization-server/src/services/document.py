@@ -15,8 +15,10 @@ from src.utils.env import _env
 from src.config.prompt import choose_summary_template
 from src.utils.email import notify_summary_finished
 import asyncio, json
+from openai import OpenAI
 
 llm_config = _env.get_llm_values()
+client = OpenAI(api_key = llm_config['API_KEY'], base_url = llm_config['API_BASE'])
 
 async def stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_name, temperature):
     text_splitter = RecursiveCharacterTextSplitter(
@@ -32,7 +34,7 @@ async def stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model_
     logger.info(f'-------doc stage1 length------{len(split_docs)}')
     stage1 = ''
     if len(split_docs) > 1:
-        sem = asyncio.Semaphore(llm_config['LLM_BATCH_SIZE'])
+        sem = asyncio.Semaphore(llm_config['BATCH_SIZE'])
         tasks = [LCCustomLLM.async_generate(map_chain, t.page_content, chunk_prompt, sem) for t in split_docs]
         resp = await asyncio.gather(*tasks)
         for r in resp:
@@ -59,7 +61,7 @@ async def stage2_summarize(stage1, chunk_size, chunk_overlap, prompt, model_name
     reduce_chain = LLMChain(llm=llm, prompt=reduce_prompt)
     split_docs = text_splitter.split_documents(docs)
 
-    sem = asyncio.Semaphore(llm_config['LLM_BATCH_SIZE'])
+    sem = asyncio.Semaphore(llm_config['BATCH_SIZE'])
     tasks = [LCCustomLLM.async_generate(reduce_chain, t.page_content, prompt, sem) for t in split_docs]
     logger.info(f'-------doc stage2 length------{len(tasks)}')
     resp = await asyncio.gather(*tasks)
@@ -87,6 +89,7 @@ async def summarize_docs(docs, chunk_size, chunk_overlap, chunk_prompt, final_pr
     max_token = int(modelDict.get("max_token"))
     
     final_context = await stage1_summarize(docs, chunk_size, chunk_overlap, chunk_prompt, model, temperature)
+    logger.info(f'-------final context------{final_context}')
     if LCCustomLLM.tokens(final_context) > max_token:
         final_context = await stage2_summarize(final_context, chunk_size, chunk_overlap, final_prompt, model, temperature)
     # format and length parameter just use to controller final summary
@@ -95,7 +98,7 @@ async def summarize_docs(docs, chunk_size, chunk_overlap, chunk_prompt, final_pr
     logger.info(f'-------final prompt------{final_prompt}')
 
     def event_stream():
-        response = call_stream(final_prompt, model=model, temperature=temperature) 
+        response = call_stream(client, final_prompt, model=model, temperature=temperature)
         summary_history = ''
         for chunk in response:
             msg = {
@@ -112,7 +115,7 @@ async def summarize_docs(docs, chunk_size, chunk_overlap, chunk_prompt, final_pr
     if stream_mode:
         return StreamingResponse(event_stream(), media_type='text/event-stream;charset=utf-8')
     else:
-        res = call_stream(final_prompt, model=model, temperature=temperature, stream=False)
+        res = call_stream(client, final_prompt, model=model, temperature=temperature, stream=False)
         return {'summary': res.choices[0].text.strip()}
 
 

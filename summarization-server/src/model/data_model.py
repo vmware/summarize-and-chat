@@ -4,11 +4,46 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from enum import Enum
-
+from src.model.common import Length, Format, Extractiveness
 from src.utils.env import _env
 
 llm_config = _env.get_llm_values()
 modelName, modelVal = _env.get_default_model() 
+
+class DBUser:
+    def __init__(self, fname, lname, email, password, id=None):
+        self.id = id
+        self.fname = fname
+        self.lname = lname
+        self.email = email
+        self.password = password
+
+    def __str__(self):
+        return f"User (fname: \"{self.fname}\", lname: \"{self.lname}\", email: \"{self.email}\", password: \"{self.password}\")"
+
+    def getId(self):
+        return self.id
+
+    def from_db(db_user):
+        return DBUser(db_user.fname, db_user.lname, db_user.email, db_user.password, db_user.id)
+
+    def getFname(self):
+        return self.fname
+
+    def getLname(self):
+        return self.lname
+
+    def getEmail(self):
+        return self.email
+
+    def getPassword(self):
+        return self.password
+
+class UserParams(BaseModel):
+    fname: str
+    lname: str
+    email: str
+    password: str
 
 class Question(BaseModel):
     q: str
@@ -31,32 +66,12 @@ class MLModel:
     def getMaxToken(self):
         return self.max_token
 
-class Length(str, Enum):
-    auto = "auto"
-    short = "short"
-    medium = "medium"
-    long = "long"
-
-
-class Format(str, Enum):
-    auto = "auto"
-    paragraph = "paragraph"
-    bullets = "bullets"
-
-
-class Template(str, Enum):
-    executive = "executive"
-    meeting = "meeting"
-
-
-# TO DO
-class Extractiveness(str, Enum):
-    auto = "auto"
-    low = "low"
-    medium = "medium"
-    high = "high"
-
-
+class User(BaseModel):
+    fname: str
+    lname: str
+    email: str
+    password: str
+    
 class Content(BaseModel):
     text: str
     length: Length = Length.auto  # One of short, medium, long, or auto defaults to auto

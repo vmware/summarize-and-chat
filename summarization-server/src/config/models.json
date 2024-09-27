@@ -1,14 +1,14 @@
 {
     "models": [
         {
-            "name": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+            "name": "mistralai/mixtral-8x7b-instruct-v0.1",
             "display_name": "Mixtral - 8x7B",
             "max_token": 30000
         },
         {
-            "name": "mistralai/Mistral-7B-Instruct-v0.2",
-            "display_name": "Mistral - 7B",
-            "max_token": 30000
+            "name": "meta/llama-3.1-8b-instruct",
+            "display_name": "LLAMA 3.1 - 7B",
+            "max_token": 128000
         },
         {
             "name": "meta-llama/Meta-Llama-3-70B-Instruct",

@@ -17,7 +17,6 @@ from llama_index.core import (
 )
 from llama_index.core.ingestion import IngestionPipeline
 from llama_index.vector_stores.postgres import PGVectorStore
-from llama_index.retrievers.bm25.base import BM25Retriever
 
 from llama_index.core.extractors import (
     QuestionsAnsweredExtractor,
@@ -28,10 +27,13 @@ from llama_index.core.vector_stores.types import (
     MetadataFilter,
     MetadataFilters,
 )
+
+# from llama_index.core import Settings
+# from llama_index.llms.openai_like import OpenAILike
 from llama_index.core.indices.postprocessor import SentenceTransformerRerank
-from llama_index.core.postprocessor import LLMRerank
+from llama_index.postprocessor.nvidia_rerank import NVIDIARerank
 
-
+# from llama_index.core.postprocessor import LLMRerank
 
 from sqlalchemy import make_url
 
@@ -42,25 +44,33 @@ from src.db.database import DocumentDB
 from src.services.vllm import LocalLLM
 from src.config.constant import title_node_template_str, title_combine_template_str, get_question_template
 
-
 # from src.config.constant import summary_query_str,document_summary_template
 from src.model.embedding import EmbeddingModel
 from src.utils.format import full_string_to_list
+
+qa_config = _env.get_qamodel_values()
 
 class PgvectorDB:
     
     def __init__(self):
         server_config = _env.get_server_values()
-        llm_config = _env.get_llm_values()
+        qa_config = _env.get_qamodel_values()
+        embedder_config = _env.get_embedder_values()
+        reranker_config = _env.get_reranker_values()
         db_config = _env.get_db_values()
+    
         self.filepath = server_config['FILE_PATH']
-        self.embedding_model = llm_config['EMBEDDING_MODEL']
-        self.vector_dim = llm_config['VECTOR_DIM']
-        self.embed_batch_size = llm_config['LLM_BATCH_SIZE']
+        self.embedding_model = embedder_config['MODEL']
+        # self.vector_dim = embedder_config['VECTOR_DIM']
+        # self.embed_batch_size = embedder_config['BATCH_SIZE']
         
-        self.chunk_size = llm_config['CHUNK_SIZE']
-        self.chunk_overlap = llm_config['CHUNK_OVERLAP']
-        self.llm_model = llm_config['QA_MODEL']
+        self.reranker_model = reranker_config['MODEL']
+        self.reranker_base_url= reranker_config['API_BASE']
+        self.reranker_top_n = reranker_config['RERANK_TOP_N']
+        
+        self.chunk_size = qa_config['CHUNK_SIZE']
+        self.chunk_overlap = qa_config['CHUNK_OVERLAP']
+        self.llm_model = qa_config['MODEL']
         self.num_workers=server_config['NUM_WORKERS']
         
         self.db_host = db_config['PG_HOST']
@@ -73,8 +83,9 @@ class PgvectorDB:
         
         # self.connection_string = f"postgresql://{self.db_user}:{self.db_passwd}@{self.db_host}:{self.db_port}/{self.default_db}"
         
-        self.embed_model = EmbeddingModel(model_name=self.embedding_model, embed_batch_size=self.embed_batch_size)
-        self.top_k = llm_config['SIMIL_TOP_K']
+        # self.embed_model = EmbeddingModel(model_name=self.embedding_model, embed_batch_size=self.embed_batch_size)
+        self.embed_model, self.embedding_size = _env.get_embedder()
+        self.top_k = qa_config['SIMIL_TOP_K']
         
         self.documentDB = DocumentDB(db_config)
  
@@ -102,8 +113,7 @@ class PgvectorDB:
 
     def add_docid(self, documents: List[Document], id: int):
         for doc in documents:
-            doc.doc_id = id
-
+            doc.doc_id = str(id)
 
     def get_connection(self):
         conn = PGVectorStore.from_params(
@@ -113,7 +123,7 @@ class PgvectorDB:
             port = self.db_port,
             user = self.db_user,
             table_name = self.table_name,
-            embed_dim = self.vector_dim, # embedding model dimension
+            embed_dim = self.embedding_size, # embedding model dimension
             cache_ok = True,
             hybrid_search = True, # retrieve nodes based on vector values and keywords
         )
@@ -158,7 +168,7 @@ class PgvectorDB:
             data = json.loads(metadata_json)
             text = data['questions_this_excerpt_can_answer']
             questions.extend(full_string_to_list(text))
-            
+          
         # Connect to the PGVector extension
         vector_store = PGVectorStore.from_params(
             database = self.db_name,
@@ -167,7 +177,7 @@ class PgvectorDB:
             port = self.db_port,
             user = self.db_user,
             table_name = self.table_name,
-            embed_dim = self.vector_dim, # embedding model dimension
+            embed_dim = self.embedding_size, # embedding model dimension
             cache_ok = True,
             hybrid_search = True, # retrieve nodes based on vector values and keywords
         )
@@ -196,7 +206,7 @@ class PgvectorDB:
             port = self.db_port,
             user = self.db_user,
             table_name = self.table_name,
-            embed_dim = self.vector_dim, # embedding model dimension
+            embed_dim = self.embedding_size, # embedding model dimension
             cache_ok = True,
             hybrid_search = True, # retrieve nodes based on vector values and keywords
         )
@@ -213,41 +223,19 @@ class PgvectorDB:
         )
         return index
     
-    # def retriever(self, file: str, user: str, top_k: int = 10):
-    #     logger.info(f'----retrieve---{file}---{user}---{top_k}---')
-    #     # filename, _ = os.path.splitext(file)
-    #     filename = os.path.basename(file)
-    #     logger.info(f'----retrieve---{filename}')
-    #     index = self.get_index(file, user)
-    #     filters = MetadataFilters(
-    #         filters=[
-    #             MetadataFilter(key="user", value=user),
-    #             MetadataFilter(key="file_name", value=filename),
-    #         ],
-    #         condition="and",
-    #     )
-        
-    #     index_retriever = index.as_retriever(
-    #         similarity_top_k = self.top_k,
-    #         filters = filters,
-    #         vector_store_kwargs={"hnsw_ef_search": 256},
-    #     )
-    #     return index_retriever
-    
-    def retriever(self, file: str, user: str, simil_top_k: int = 10, rerank_enabled: bool = True, rerank_model: str = "BAAI/bge-reranker-large", rerank_top_n: int = 5):
-        logger.info(f'----retrieve2---{file}---{user}---{simil_top_k}---{rerank_top_n}---')
+    def retriever(self, file: str, user: str, simil_top_k: int, re_ranker):
+        logger.info(f'----retrieve2---{file}---{user}---')
         filename = os.path.basename(file)
         logger.info(f'----retrieve2---{filename}')
         index = self.get_index(file, user)
         
-        # Initialize the re-ranker of retrieved chunks
-        if rerank_enabled:
-            reranker = SentenceTransformerRerank(
-                top_n=rerank_top_n,
-                model=rerank_model,
-            )
-        else:
-            reranker = None
+        # re_ranker = NVIDIARerank(
+        #     model=rerank_model,
+        #     base_url=rerank_base_url,
+        #     api_key="NONE",
+        #     top_n=rerank_top_n,
+        #     truncate="END",
+        # )
             
         filters = MetadataFilters(
             filters=[
@@ -260,7 +248,7 @@ class PgvectorDB:
         index_retriever = index.as_retriever(
             similarity_top_k = self.top_k,
             filters = filters,
-            node_postprocessors=[reranker],
+            node_postprocessors=[re_ranker],
             vector_store_kwargs={"hnsw_ef_search": 256},
         )
         return index_retriever

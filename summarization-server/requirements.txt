@@ -3,7 +3,7 @@ PyYAML==6.0.1
 transformers==4.38.0
 sentencepiece==0.1.99
 aioredis==2.0.1
-openai==1.7.2
+openai==1.42.0 #1.7.2
 pandas==1.3.5
 python-multipart==0.0.7
 unstructured==0.10.9
@@ -16,12 +16,16 @@ webvtt-py==0.4.6
 sentence-transformers==2.2.2
 faiss-cpu==1.7.4
 ffmpeg==1.4
-llama-index-core==0.10.38
-llama-index-readers-file==0.1.6
-llama-index-vector-stores-faiss==0.1.2
-llama-index-vector-stores-postgres==0.1.13
-llama-index-embeddings-langchain==0.1.2
-llama-index-retrievers-bm25==0.1.3
+llama-index==0.11.1
+llama-index-core==0.11.1 #0.10.38
+llama-index-readers-file==0.2.2 # 0.1.6
+llama-index-vector-stores-postgres==0.2.1 # 0.1.13
+llama-index-postprocessor-nvidia-rerank==0.3.1
+llama-index-embeddings-nvidia==0.2.1
+llama-index-embeddings-openai==0.2.3
+# llama-index-llms-openai==0.2.0
+# llama-index-llms-openai-like==0.2.0
+multiprocess==0.70.16
 pydub==0.25.1
 python-pptx==0.6.23
 Werkzeug==3.0.3

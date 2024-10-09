@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: summarizer-server
+  namespace: "sum-and-chat" # Change to the namespace where you want to deploy the service 
+  labels:
+    app: summarizer-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: summarizer-server
+  template:
+    metadata:
+      labels:
+        app: summarizer-server
+    spec:
+      containers:
+      - env:
+        - name: SYS_ENV
+          value: dev
+        image: # Change to your docker image name
+        imagePullPolicy: IfNotPresent
+        name: summarizer-server
+        resources:
+          limits:
+            cpu: "15"
+            memory: 20Gi
+          requests:
+            cpu: "10"
+            memory: 16Gi
+        volumeMounts:
+        - mountPath: /mnt/data
+          name: "pvc-storage" # Change to the name of the persistent volume claim you created
+          subPath: data
+      restartPolicy: Always
+      volumes:
+      - name: "pvc-storage"
+        persistentVolumeClaim:
+          claimName: # Change to the name of the persistent volume claim you created
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: summarizer-server-svc
+  namespace: "sum-and-chat"
+spec:
+  ports:
+  - name: http
+    port: 50
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: summarizer-server-svc
+  namespace: sum-and-chat  
+spec:
+  ports:
+  - name: http
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+  type: ClusterIP  # Change to LoadBalancer if you want external access
+  selector:
+    app: summarizer-server        

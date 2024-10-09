@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: summarizer-client
+  namespace: sum-and-chat 
+  labels:
+    app: summarizer-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: summarizer-client
+  template:
+    metadata:
+      labels:
+        app: summarizer-client
+    spec:
+      containers:
+      - env:
+        - name: SYS_ENV
+          value: dev
+        image: # Change to your docker image
+        imagePullPolicy: IfNotPresent
+        name: summarizer-client
+        ports:
+        - containerPort: 4200
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: summarizer-client-svc
+  namespace: sum-and-chat  
+spec:
+  ports:
+  - name: http
+    port: 4200
+    protocol: TCP
+    targetPort: 5000
+  type: LoadBalancer  # Change to LoadBalancer if you want external access
+  selector:
+    app: summarizer-client       

@@ -16,7 +16,7 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from src.config.prompt import mistral_route_template_str, mistral_direct_answer_template_str
 from src.model.embedding import EmbeddingModel
 from src.utils.format import full_string_to_list
-from src.services.vllm import LocalLLM, call_stream
+from src.services.vllm import LocalLLM, call_stream, get_embedder, get_rerank_model
 from src.model.file_type import validate_audio
 from src.db.pgvector_db import pgvectorDB
 from src.config.constant import get_text_qa_template,get_refine_template,get_summary_template
@@ -55,13 +55,13 @@ async def llmaindex_rag(query: str, user: str, doc: str):
             doc = f"{base_name}.vtt"
             
         llm = LocalLLM(model_name = modelName, context_window=30000)
-        embed_model, embedding_size = _env.get_embedder()
+        embed_model, embedding_size = get_embedder()
         # embed_model = EmbeddingModel(model_name=embedder_config['MODEL'], embed_batch_size=embedder_config['BATCH_SIZE'])
         text_splitter = SentenceSplitter(chunk_size=qa_config['CHUNK_SIZE'], chunk_overlap=qa_config['CHUNK_OVERLAP'])
         start = time.time()
         
         response_mode = 'compact'
-        re_ranker = _env.get_rerank_model()
+        re_ranker = get_rerank_model()
         
         retriever = pgvectorDB.retriever(doc, user, qa_config['SIMIL_TOP_K'], re_ranker)
         logger.info(f'-----load index spend time--------{time.time()-start}')

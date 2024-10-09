@@ -63,6 +63,7 @@ def create_db():
             fname VARCHAR (100)  NOT NULL,
             lname VARCHAR (100)  NOT NULL,
             email VARCHAR (100)  NOT NULL,
+            password VARCHAR (256)  NOT NULL,
             create_time TIMESTAMP default now(),
             UNIQUE (email));
             """)

@@ -4,9 +4,6 @@
 import os, time, yaml, json
 from enum import Enum
 
-from llama_index.postprocessor.nvidia_rerank import NVIDIARerank
-from llama_index.embeddings.nvidia import NVIDIAEmbedding
-
 class ENV(Enum):
     PROD = 'prod'
     STG = 'stg'
@@ -45,8 +42,10 @@ class environment:
         self.okta_auth_url = okta["OKTA_AUTH_URL"] if okta else ''
         self.okta_client_id = okta["OKTA_CLIENT_ID"] if okta else ''
         
+        sum_models = self.get_llm_values()
+        models_json = sum_models["MODELS_JSON"] if sum_models else ''
         self.models = []
-        f = open("src/config/models.json")
+        f = open(models_json)
         data = json.load(f)
         for i in data['models']:
             self.models.append(i)
@@ -83,12 +82,12 @@ class environment:
             return self.get_children(okta, ["OKTA_AUTH_URL", "OKTA_CLIENT_ID", "OKTA_ENDPOINTS"])
 
     def get_llm_values(self, refresh=False):
-        llm = self.get_config('llm', refresh=refresh)
+        llm = self.get_config('summarization_model', refresh=refresh)
         if llm:
-            return self.get_children(llm, ["API_BASE", "API_KEY", "MODELS_JSON", "MODEL", "MAX_TOKEN", "MAX_COMPLETION", "BATCH_SIZE"])
+            return self.get_children(llm, ["API_BASE", "API_KEY", "MODELS_JSON", "MAX_COMPLETION", "BATCH_SIZE"])
         
     def get_qamodel_values(self, refresh=False):
-        llm = self.get_config('qamodel', refresh=refresh)
+        llm = self.get_config('qa_model', refresh=refresh)
         if llm:
             return self.get_children(llm, ["API_BASE", "API_KEY", "MODEL", "MAX_TOKEN", "MAX_COMPLETION", "CHUNK_SIZE", "CHUNK_OVERLAP", "NUM_QUERIES", "SIMIL_TOP_K"])
 
@@ -179,27 +178,5 @@ class environment:
         # first_value = list(self.model_dict.values())[0]
         return first_key, first_value
 
-    def get_rerank_model(self):
-        reranker_config = self.get_reranker_values()
-        re_ranker = NVIDIARerank(
-            model=reranker_config['MODEL'],
-            base_url=reranker_config['API_BASE'],
-            api_key=reranker_config['API_KEY'],
-            top_n=reranker_config['RERANK_TOP_N'],
-            truncate="END",
-        )
-        return re_ranker
-
-    def get_embedder(self):
-        embedder_config = _env.get_embedder_values()
-        embed_model = NVIDIAEmbedding(
-            base_url=embedder_config['API_BASE'],
-            model=embedder_config['MODEL'],
-            embed_batch_size=embedder_config['BATCH_SIZE'],
-            truncate="END",
-        )
-        embedding_size = 1024
-        return embed_model, embedding_size
-            
 _env = environment()
 

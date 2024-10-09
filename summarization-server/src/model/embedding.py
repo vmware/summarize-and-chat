@@ -4,8 +4,9 @@
 from llama_index.core.base.embeddings.base import BaseEmbedding
 from typing import Any, List
 from src.config import logger
-from src.utils.env import _env
 from openai import OpenAI, AsyncOpenAI
+
+from src.utils.env import _env
 
 config = _env.get_embedder_values()
 client = OpenAI(api_key=config['API_KEY'], base_url=config['API_BASE'])
@@ -35,16 +36,10 @@ class EmbeddingModel(BaseEmbedding):
         return get_embedding(self.model_name, text)
 
     async def _aget_query_embedding(self, query: str) -> List[float]:
-        return await aget_embedding(
-            self.model_name,
-            query,
-        )
+        return await aget_embedding(self.model_name,query,)
 
     async def _aget_text_embedding(self, text: str) -> List[float]:
-        return await aget_embedding(
-            self.model_name,
-            text,
-        )
+        return await aget_embedding(self.model_name,text,)
 
     def _get_text_embeddings(self, texts: List[str]) -> List[List[float]]:
         list_of_text = [text.replace("\n", " ") for text in texts]

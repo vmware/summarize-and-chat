@@ -11,12 +11,13 @@ llm_config = _env.get_llm_values()
 modelName, modelVal = _env.get_default_model() 
 
 class DBUser:
-    def __init__(self, fname, lname, email, password, id=None):
+    def __init__(self, fname, lname, email, password='', id=None):
         self.id = id
         self.fname = fname
         self.lname = lname
         self.email = email
         self.password = password
+        self.id = id
 
     def __str__(self):
         return f"User (fname: \"{self.fname}\", lname: \"{self.lname}\", email: \"{self.email}\", password: \"{self.password}\")"
@@ -27,10 +28,10 @@ class DBUser:
     def from_db(db_user):
         return DBUser(db_user.fname, db_user.lname, db_user.email, db_user.password, db_user.id)
 
-    def getFname(self):
+    def getFirstName(self):
         return self.fname
 
-    def getLname(self):
+    def getLastName(self):
         return self.lname
 
     def getEmail(self):
@@ -42,6 +43,10 @@ class DBUser:
 class UserParams(BaseModel):
     fname: str
     lname: str
+    email: str
+    password: str
+
+class LoginParams(BaseModel):
     email: str
     password: str
 
@@ -66,11 +71,11 @@ class MLModel:
     def getMaxToken(self):
         return self.max_token
 
-class User(BaseModel):
-    fname: str
-    lname: str
-    email: str
-    password: str
+# class User(BaseModel):
+#     fname: str
+#     lname: str
+#     email: str
+#     password: str
     
 class Content(BaseModel):
     text: str

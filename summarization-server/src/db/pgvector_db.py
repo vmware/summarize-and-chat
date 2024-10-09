@@ -41,7 +41,7 @@ from src.config import logger
 from src.utils.env import _env
 from src.utils.loader import pdf_extractor
 from src.db.database import DocumentDB
-from src.services.vllm import LocalLLM
+from src.services.vllm import LocalLLM, get_embedder, get_rerank_model
 from src.config.constant import title_node_template_str, title_combine_template_str, get_question_template
 
 # from src.config.constant import summary_query_str,document_summary_template
@@ -84,7 +84,7 @@ class PgvectorDB:
         # self.connection_string = f"postgresql://{self.db_user}:{self.db_passwd}@{self.db_host}:{self.db_port}/{self.default_db}"
         
         # self.embed_model = EmbeddingModel(model_name=self.embedding_model, embed_batch_size=self.embed_batch_size)
-        self.embed_model, self.embedding_size = _env.get_embedder()
+        self.embed_model, self.embedding_size = get_embedder()
         self.top_k = qa_config['SIMIL_TOP_K']
         
         self.documentDB = DocumentDB(db_config)
@@ -229,14 +229,6 @@ class PgvectorDB:
         logger.info(f'----retrieve2---{filename}')
         index = self.get_index(file, user)
         
-        # re_ranker = NVIDIARerank(
-        #     model=rerank_model,
-        #     base_url=rerank_base_url,
-        #     api_key="NONE",
-        #     top_n=rerank_top_n,
-        #     truncate="END",
-        # )
-            
         filters = MetadataFilters(
             filters=[
                 MetadataFilter(key="user", value=user),

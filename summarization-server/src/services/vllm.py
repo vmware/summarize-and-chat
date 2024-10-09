@@ -16,8 +16,13 @@ from llama_index.core.llms import (
 )
 from llama_index.core.llms.callbacks import llm_completion_callback
 
+from llama_index.core.indices.postprocessor import SentenceTransformerRerank
+from llama_index.postprocessor.nvidia_rerank import NVIDIARerank
+from llama_index.embeddings.nvidia import NVIDIAEmbedding
+
 from src.config import logger
 from src.utils.env import _env
+from src.model.embedding import EmbeddingModel
 
 llm_config = _env.get_llm_values()
 llm_client = OpenAI(api_key = llm_config['API_KEY'], base_url = llm_config['API_BASE'])
@@ -240,3 +245,39 @@ def call_stream(client,
     except Exception as e:
         logger.error("llm call error: {}".format(str(e)))
     return response
+
+def get_rerank_model():
+    reranker_config = _env.get_reranker_values()
+    model_name =  reranker_config["MODEL"]
+    if model_name.startswith("nvidia"):
+        re_ranker = NVIDIARerank(
+            model=reranker_config['MODEL'],
+            base_url=reranker_config['API_BASE'],
+            api_key=reranker_config['API_KEY'],
+            top_n=reranker_config['RERANK_TOP_N'],
+            truncate="END",
+        )
+    else:
+        re_ranker = None
+        re_ranker = SentenceTransformerRerank(
+            model=reranker_config['MODEL'],
+            top_n=reranker_config['RERANK_TOP_N'],
+        )
+    return re_ranker
+
+def get_embedder():
+    embedder_config = _env.get_embedder_values()
+    model_name =  embedder_config["MODEL"]
+    if model_name.startswith("nvidia"):
+        embed_model = NVIDIAEmbedding(
+            base_url=embedder_config['API_BASE'],
+            model=embedder_config['MODEL'],
+            embed_batch_size=embedder_config['BATCH_SIZE'],
+            truncate="END",
+        )
+    else:
+        embed_model = EmbeddingModel(
+            model_name=embedder_config['MODEL'],
+            embed_batch_size=embedder_config['BATCH_SIZE']
+        )
+    return embed_model, embedder_config["VECTOR_DIM"]

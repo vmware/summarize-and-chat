@@ -2,12 +2,13 @@ okta:
   OKTA_AUTH_URL: "Okta auth URL"
   OKTA_CLIENT_ID: "Okta client ID"
   OKTA_ENDPOINTS: [ 'admin' ]
-llm:
+summarization_model:
   API_BASE: "LLM api server"
   API_KEY: "API key"
   MAX_COMPLETION: 700
   BATCH_SIZE: 4
-qamodel:
+  MODELS_JSON: "src/config/models.json"
+qa_model:
   API_BASE: "QA model API server"
   API_KEY: "api key"
   MODEL: "mistralai/mixtral-8x7b-instruct-v0.1"

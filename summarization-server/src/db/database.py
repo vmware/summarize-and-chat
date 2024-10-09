@@ -290,11 +290,7 @@ class UserDB(Database):
             cursor = conn.cursor()
             cursor.execute("INSERT INTO summarizer_user(fname, lname, email, password) VALUES(%s, %s, %s, %s) RETURNING id;", (fname, lname, email, encode_password(password)))
             new_id = cursor.fetchone()[0]
-            user = DBUser()
-            user.fname = fname
-            user.lname = lname
-            user.email - email
-            user.password = password
+            user = DBUser(fname, lname, email, password)
             cursor.close()
             return user
         except psycopg2.Error as e:
@@ -313,14 +309,13 @@ class UserDB(Database):
     def get_user_by_email(self, email):
         try: 
             conn = self.connect()
-            conn.autocommit = True
             cursor = conn.cursor()
-            cursor.execute("SELECT id, fname, lname, email FROM summarizer_user where email = %s;", (email))
+            cursor.execute("SELECT * FROM summarizer_user WHERE email = %s;", (email,))
             result = cursor.fetchall()
             if result:
                 dbuser = result[0]
                 print(dbuser)
-                user = DBUser(fname=dbuser[1], lname=dbuser[2], email=dbuser[3], id=dbuser[0])
+                user = DBUser(fname=dbuser[1], lname=dbuser[2], email=dbuser[3], password=dbuser[4], id=dbuser[0])
                 return user
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)

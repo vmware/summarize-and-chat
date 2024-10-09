@@ -3,7 +3,7 @@
 The project includes three components:
 
 - [**_summarization-client_**](./summarization-client): Angular/Clarity web application for content management, summary generation and chat.
-- [**_summarization-server_**](./summarization-server): FastAPI gateway server to manage core application functions including access control, document ingestion pipeline,summarization with Map Reduce provided by [LangChain](https://python.langchain.com/v0.2/docs/introduction/), and improved RAG with [LlamaIndex Fusion Retriever](https://docs.llamaindex.ai/en/stable/examples/retrievers/reciprocal_rerank_fusion/).
+- [**_summarization-server_**](./summarization-server): FastAPI gateway server to manage core application functions including access control, document ingestion pipeline,summarization with Map Reduce provided by [LangChain](https://python.langchain.com/v0.2/docs/introduction/), and improved RAG with [LlamaIndex](https://docs.llamaindex.ai/en/stable/) from a PGVector Store.
 - [**_stt-service_**](./stt-service): Speech-to-text microservice to convert audio to text using OpenAI’s faster-whisper API
 
 ## Tools used
@@ -107,28 +107,18 @@ okta:
   OKTA_ENDPOINTS: [ 'admin' ]
 ```
 
-- Set up LLM configuration
+- Set up Summarization model configuration
 
 ```yaml
-llm:
-  LLM_API: "your LLM api server" # https://api.openai.com/v1"
-  AUTH_KEY: "your api key"
-  QA_MODEL: "default QA model" # mistralai/Mixtral-8x7B-Instruct-v0.1"
-  QA_MODEL_MAX_TOKEN_LIMIT: "max token limit for QA model" #30000
-  EMBEDDING_MODEL: "embedding model" # "Salesforce/SFR-Embedding-Mistral"
-  VECTOR_DIM: "embedding model vector dimension" # 4096 
-  SIMIL_TOP_K: 10 # Retrieve TOP_K most similar docs from the PGVector store
-  RERANK_ENABLED: True
-  RERANK_MODEL: "BAAI/bge-reranker-large" # re-ranking model
-  RERANK_TOP_N: 5 # Rerank and pick the 5 most similar docs
-  MAX_COMPLETION: "max tokens of completion for each query" #700
-  CHUNK_SIZE: "default chunk size" # 512
-  CHUNK_OVERLAP: "default chunk overlap" # 20
-  NUM_QUERIES: "default number of queries" # 3
-  LLM_BATCH_SIZE: "batch size for LLM" # 5
+summarization_model:
+  API_BASE: "LLM api base for summarization task" 
+  API_KEY: "api key"
+  MAX_COMPLETION: 700
+  BATCH_SIZE: 1
+  MODELS_JSON: "src/config/models.json" # models for summarization task
 ```
 
-You also need to specify the available LLMs for the summarization task in the [summarization-server/src/config/models.json](./summarization-server/src/config/models.json).
+You can specify the available LLMs for the summarization task in the [summarization-server/src/config/models.json](./summarization-server/src/config/models.json).
 
 ```json
 {
@@ -157,10 +147,41 @@ You also need to specify the available LLMs for the summarization task in the [s
 }
 ```
 
+- Set up QA models configuration
+
+```yaml
+qa_model:
+  API_BASE: "LLM api base for QA model"
+  API_KEY: "api key"
+  MODEL: "mistralai/Mixtral-8x7B-Instruct-v0.1"
+  MAX_TOKEN: 1024
+  MAX_COMPLETION: 700
+  SIMIL_TOP_K: 10 # Retrieve TOP_K most similar docs from the PGVector store
+  CHUNK_SIZE: 512
+  CHUNK_OVERLAP: 20
+  NUM_QUERIES: 3
+```
+
+```yaml
+embedder:
+  API_BASE: "LLM api base for embedding model"
+  API_KEY: "api key"
+  MODEL: "nvidia/nv-embedqa-e5-v5"
+  VECTOR_DIM: 1024
+  BATCH_SIZE: 16
+```
+
+```yaml
+reranker:
+  API_BASE: "LLM api base for reranker model"
+  API_KEY: NONE
+  MODEL: "nvidia/nv-rerankqa-mistral-4b-v3" # "BAAI/bge-reranker-large"
+  RERANK_TOP_N: 5 # Rerank and pick the 5 most similar docs
+```
+
 - Set up Database configuration
 
 ```yaml
-
 database:
   PG_HOST: "Database host" #"localhost"
   PG_PORT: 5432
@@ -180,7 +201,8 @@ server:
   NUM_WORKERS: 1
   PDF_READER: pypdf # default PDF parser
   FILE_PATH:  "../data"
-  RELOAD: False
+  RELOAD: True
+  AUTH: okta
 ```
 
 - If you are want to enable Speech-to-text function, you need to set stt configurations in the [summarization-server/src/config/config.yaml](./summarization-server/src/config/config.yaml) file.

@@ -164,7 +164,7 @@ async def files(token=Depends(verify_token)):
                            'index': index})
     # clean the vtt files which have mapped to audio file
     result[:] = [r for r in result if r['file'] not in vtts]
-    logger.info(f'--result---{result}')
+    # logger.info(f'--result---{result}')
     # sorted by time
     result = sorted(result, key=lambda r: datetime.datetime.strptime(r['time'], "%Y-%m-%d %H:%M:%S"), reverse=True)
     return {'data': result}

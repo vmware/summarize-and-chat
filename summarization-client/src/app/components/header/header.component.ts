@@ -13,6 +13,8 @@ import {
   ViewChild,
 } from '@angular/core';
 
+import { Router } from '@angular/router';
+
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { SummarizeService } from 'src/app/services/summarize.service';
 
@@ -71,11 +73,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private _auth:AuthService,
     private _config:ConfigService,
     private _summarizeService: SummarizeService,
-    private _chatService: ChatService) {
+    private _chatService: ChatService,
+    private router: Router) {
   }
 
   public ngOnInit(): void {
-    this._auth.fetchUser()
+    this._auth.fetchOktaUser()
     this.subs.push(this._user$.subscribe(u => {
       this.user = u;
       this.userStr = this.user? this.user.first_name : '';
@@ -119,8 +122,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subs.forEach(s => s?.unsubscribe())
   }
 
-  public async login() : Promise<void> {
-    await this._auth.signIn()
+  public async login(payload?: any) : Promise<void> {
+    console.log('login');
+    if (this._config.authSchema == 'okta') {
+      console.log('okta');
+      await this._auth.signIn()
+    } else {
+      console.log('basic');
+      this.router.navigateByUrl('/login/basic');
+      // this._auth.basicAuthSignIn(payload)
+    }
   }
 
   public async logout(): Promise<void> {

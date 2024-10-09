@@ -7,12 +7,12 @@ import { OKTA_AUTH, OktaAuthStateService } from '@okta/okta-angular';
 import OktaAuth, { AuthState } from '@okta/okta-auth-js';
 import { BehaviorSubject, Observable, catchError, throwError as observableThrowError, filter, map, switchMap, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { ALERT_TYPE, AppAlert,User } from '../models/common';
+import { ALERT_TYPE, AppAlert, User } from '../models/common';
 import { IAppState } from '../store/reducer';
 import * as AuthActions from '../store/actions'
 import { ConfigService } from './config.service';
 import { HttpClient } from '@angular/common/http';
-import { parseHttpErrorMsg } from '../utils/utils';
+
 
 @Injectable({
   providedIn: 'root'
@@ -24,23 +24,31 @@ export class AuthService {
   public login_endabled:boolean = false
   public is_authenticated:boolean = false
   public user?:User
-
+ 
   private serverurl:string
-  private httpheader:any
   private fetching_user:boolean = false
 
   constructor(
     private _oktastate: OktaAuthStateService,  
     @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth, 
     private _store: Store<IAppState>, 
-    private _http: HttpClient, 
+    private http: HttpClient,
     private _config:ConfigService) { 
-      this.serverurl = _config.apiServerUrl
-      // this.httpheader = {
-      //   "Content-Type": "application/json",
-      //   "Authorization": `Bearer ${_config.adminToken}`
-      // }
-      this.fetchUser()
+      this.serverurl = `${this._config.apiServerUrl}/api/v1`;
+      console.log('serverurl', this.serverurl)
+      if (this._config.authSchema == 'okta') {
+        this.fetchOktaUser()
+      }
+  }
+
+  public register(payload: any): Observable<any> {
+    console.log('registering user', payload)
+    console.log(`${this.serverurl}/register`)
+    return this.http.post(`${this.serverurl}/register`, payload);
+  }
+
+  public basicAuthSignIn(payload: any): Observable<any> {
+    return this.http.post(`${this.serverurl}/login/basic`, payload);
   }
 
   public async signIn() : Promise<void> {
@@ -52,7 +60,7 @@ export class AuthService {
     this._store.dispatch(AuthActions.setUser({ user: undefined}))
   }
 
-  fetchUser(): void {
+  fetchOktaUser(): void {
     if (!this.fetching_user) {
       this.fetching_user = true
       this._oktastate.authState$.pipe(
@@ -69,5 +77,10 @@ export class AuthService {
         this._store.dispatch(AuthActions.setUser({ user: this.user}))
       })
     }
+  }
+
+  public addUserToStorage(user: any) {
+    localStorage.setItem(this._config.sessionKey, JSON.stringify(user));
+    this._user$.next(user)
   }
 }

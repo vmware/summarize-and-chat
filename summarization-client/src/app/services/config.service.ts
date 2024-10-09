@@ -15,7 +15,10 @@ export class ConfigService {
   
   get isProd(): boolean { return !this.config_env ? environment.production : false }
   get apiServerUrl(): string  { return !this.config_env ? environment.serviceUrl : this.config_env.serviceUrl }
-  
+
+  get authSchema(): string { return !this.config_env ? environment.authSchema : this.config_env.authSchema }
+  get sessionKey(): string { return !this.config_env ? environment.sessionKey : this.config_env.sessionKey }
+
   get ssoAuthUrl(): string { return !this.config_env ? environment.ssoIssuer : this.config_env.ssoIssuer }
   get clientId():string { return !this.config_env ? environment.ssoClientId : this.config_env.ssoClientId }
   get redirectUrl():string { return !this.config_env ? environment.redirectUrl : this.config_env.redirectUrl }

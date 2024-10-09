@@ -11,4 +11,6 @@ export interface Environment {
     redirectUrl: string;
     adminToken?: string;
     contactUs: string;
+    authSchema: string;
+    sessionKey: string;
   }

@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -22,6 +23,7 @@ import { NavComponent } from './components/nav/nav.component';
 import { HeaderComponent } from './components/header/header.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FaqComponent } from './components/faq/faq.component';
+import { BasicLoginComponent } from './components/login/basic-login/basic-login.component';
 
 import { StoreModule } from '@ngrx/store';
 
@@ -42,10 +44,13 @@ export const oktaAuth = new OktaAuth({
     AppComponent,
     NavComponent,
     HeaderComponent,
-    FaqComponent
+    FaqComponent,
+    BasicLoginComponent
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     ClarityModule,
     CdsModule,

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: summarizer-server-ingress
+  namespace: sum-and-chat  #
+  annotations:
+spec:
+  ingressClassName: nginx  # Specify the ingress class here
+  tls:
+    - hosts:
+      - fqdn.local #change to your FQDN
+      secretName: summarizer-secret #change to your secret name with your certificates
+  rules:
+    - host: fqdn.local #change to your FQDN
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: summarizer-server-svc #change to your service name
+                port:
+                  number: 5000

@@ -16,7 +16,7 @@ langchain-community==0.3.2
 langchain-core==0.3.10
 langchain-text-splitters==0.3.0
 webvtt-py==0.4.6
-sentence-transformers==2.2.2
+sentence-transformers==2.6.1
 faiss-cpu==1.7.4
 ffmpeg==1.4
 llama-index==0.11.1
@@ -31,7 +31,7 @@ llama-index-embeddings-openai==0.2.3
 multiprocess==0.70.16
 pydub==0.25.1
 python-pptx==0.6.23
-Werkzeug==3.0.3
+Werkzeug==3.0.6
 docx2txt==0.8
 rank-bm25==0.2.2
 okta_jwt==1.3.5

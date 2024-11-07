@@ -109,6 +109,8 @@ export class SummarizeDocComponent implements OnInit {
   models: any;
   configInfo: any;
 
+  loggedUser: any;
+
   constructor(
     @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth,
     private _store: Store<IAppState>,
@@ -122,10 +124,16 @@ export class SummarizeDocComponent implements OnInit {
     private summarizeRequestService: SummarizeRequestService,
     private summarizeService: SummarizeService
   ) {
-    const user = this._auth.user;
-    if (user && user.name) {
-      this.username = user.email; 
-    }
+    // const user = this._auth.user;
+    // if (user && user.name) {
+    //   this.username = user.email; 
+    // }
+
+    this._auth.loggedUserListener().subscribe((res) => {
+      this.loggedUser = res;
+      this.username = this.loggedUser.user.email
+      console.log(this.username)
+    });
 
     this.uploadInfoSubscription =
       this.summarizeParamsService.uploadInfo$.subscribe((uploadObj) => {
@@ -143,12 +151,14 @@ export class SummarizeDocComponent implements OnInit {
   ngOnInit(): void {
     this.chatService.setAssistValue(false);
     this.summarizeService.getModels().subscribe((models) => {
-      this.models = models;
-      if (this.models.length > 0) {
-        let selectedModel = this.models[0];
-      } 
+      if (models) {
+        this.models = models;
+        if (this.models.length > 0) {
+          let selectedModel = this.models[0];
+        } 
+      }
     });
-  
+
     this.summarizeParamsService.getParametersValue().subscribe((res) => {
       this.configInfo = res;
     });
@@ -611,7 +621,8 @@ export class SummarizeDocComponent implements OnInit {
   }
 
   getStream(payload: any, url: string) {
-    const token = this._oktaAuth.getAccessToken();
+    // const token = this._oktaAuth.getAccessToken();
+    const token = this.loggedUser.user.token;
     this.showAIloading = true;
     this.outputSummary = '';
     this.showStop = true;

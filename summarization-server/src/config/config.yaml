@@ -25,6 +25,7 @@ embedder:
   VECTOR_DIM: 1024
   BATCH_SIZE: 1
 reranker:
+  RERANK_ENABLED: True
   API_BASE: "Re-ranking model api server"
   API_KEY: "api key"
   MODEL: "nvidia/nv-rerankqa-mistral-4b-v3"
@@ -43,8 +44,8 @@ server:
   PDF_READER: pypdf # default PDF parser
   FILE_PATH: "/mnt/data"
   RELOAD: False
-  VECTOR_DB: pgvector
-  AUTH: okta # basic, okta
+  AUTH: basic
+  JWT_SECRET_KEY: "secret key for JWT"
 stt:
   STT_API: "http://localhost:9000/api/v1" # STT-server URL
   AUTH_KEY: "your STT api auth key"

@@ -34,7 +34,39 @@ export class User {
   set_default(key:string, value:string) {
       this.defaults[key] = value;
   }
+}
 
+export enum SessionStatus {
+  NOT_AUTHENTICATED,
+  AUTHENTICATED,
+  EXPIRED,
+}
+
+export interface AuthResponseToken {
+  access_token?: string;
+  access_type?: string;
+  expires_in?: number;
+  refresh_token?: string;
+  expires_time?: number;
+}
+
+export interface AuthUser {
+  // email:string
+  // name:string
+  // username:string
+  // token:string
+  token?: AuthResponseToken;
+  user?: {
+    role?: any;
+    email: string;
+    provider?: string;
+    sub?: string;
+    username?: string;
+    exp?: number;
+    iat?: number;
+    iss?: string;
+    name?: string;
+  };
 }
 
 export enum EVENT_TYPE {

@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0 -->
 
   </div>
   <div class="header-actions">
-    <assist *ngIf="showAssist && user && canAssist" 
+    <assist *ngIf="showAssist && loggedUser && canAssist"
       #assist [user]="userStr" [helps]="helps"
       [promptQuestions]="inputQuestions" 
       (showPin)="showPin($event)" 
@@ -35,12 +35,12 @@ SPDX-License-Identifier: Apache-2.0 -->
       (delHistory)="delHistory($event)" 
       (getHistory)="getHistory()">
     </assist>
-    <a *ngIf="!user" (click)="login()" class="nav-link nav-text" style="cursor: pointer">
+    <a *ngIf="!loggedUser" (click)="login()" class="nav-link nav-text" style="cursor: pointer">
       Sign In
     </a>
-    <clr-dropdown *ngIf="user" style="margin-right: 0.3rem">
+    <clr-dropdown *ngIf="loggedUser" style="margin-right: 0.3rem">
       <button class="nav-text" clrDropdownTrigger>
-        {{ user.name }}
+        {{ loggedUser.user.email }}
         <cds-icon shape="angle" direction="down"></cds-icon>
       </button>
       <clr-dropdown-menu *clrIfOpen clrPosition="bottom" style="z-index: 1100">

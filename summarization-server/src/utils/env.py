@@ -97,9 +97,9 @@ class environment:
             return self.get_children(llm, ["API_BASE", "API_KEY", "MODEL", "VECTOR_DIM","BATCH_SIZE"])
 
     def get_reranker_values(self, refresh=False):
-        llm = self.get_config('reranker', refresh=refresh)
-        if llm:
-            return self.get_children(llm, ["API_BASE", "API_KEY", "MODEL", "RERANK_TOP_N"])
+        reranker = self.get_config('reranker', refresh=refresh)
+        if reranker:
+            return self.get_children(reranker, ["RERANK_ENABLED", "API_BASE", "API_KEY", "MODEL", "RERANK_TOP_N"])
 
     def get_db_values(self, refresh=False):
         db = self.get_config('database', refresh=refresh)
@@ -109,7 +109,7 @@ class environment:
     def get_server_values(self, refresh=False):
         server = self.get_config('server', refresh=refresh)
         if server:
-            return self.get_children(server, ["HOST", "PORT", "RELOAD", "NUM_WORKERS", "PDF_READER", "FILE_PATH", "VECTOR_DB", "RERANK_ENABLED"])
+            return self.get_children(server, ["HOST", "PORT", "RELOAD", "NUM_WORKERS", "PDF_READER", "FILE_PATH", "JWT_SECRET_KEY"])
     
     def get_email_values(self, refresh=False):
         email = self.get_config('email', refresh=refresh)

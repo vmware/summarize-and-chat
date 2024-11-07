@@ -92,11 +92,9 @@ export class BasicLoginComponent implements OnInit {
         email: this.dsForm?.get('username')?.value,
         password: this.dsForm?.get('password')?.value,
       };
-      console.log(param)
       this.authService.basicAuthSignIn(param).subscribe(
         (res) => {
           let auth_user = res.auth_user
-          console.log(auth_user)
           const user = {
             user: {
               email: auth_user.email,
@@ -106,7 +104,9 @@ export class BasicLoginComponent implements OnInit {
             },
           };
           this.authService.addUserToStorage(user);
-          this.authService._user$.next(user);
+          this.authService.userSubject.next(user);
+          const test = this.authService.loggedUser();
+          console.log('---user in storage--', test)
           this.loading = false;
           this.router.navigate(['/nav/doc']);
         },

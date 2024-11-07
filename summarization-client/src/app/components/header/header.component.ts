@@ -18,10 +18,10 @@ import { Router } from '@angular/router';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { SummarizeService } from 'src/app/services/summarize.service';
 
-import { OKTA_AUTH } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+// import { OKTA_AUTH } from '@okta/okta-angular';
+// import { OktaAuth } from '@okta/okta-auth-js';
 import { Store, select } from '@ngrx/store';
-import { User } from 'src/app/models/common';
+import { User, AuthUser } from 'src/app/models/common';
 import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { IAppState,  getUser } from 'src/app/store/reducer';
@@ -45,8 +45,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   title: string = 'Summarize and Chat';
 
+  loggedUser: any;
+
   is_authenticated:boolean = false
-  user?:User
+  user?:AuthUser
 
   private _user$ = this._store.pipe(select(getUser))
   private subs:any[] = []
@@ -68,7 +70,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   history: any = [];
 
   constructor(
-    @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth,
     private _store: Store<IAppState>,
     private _auth:AuthService,
     private _config:ConfigService,
@@ -78,13 +79,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this._auth.fetchOktaUser()
-    this.subs.push(this._user$.subscribe(u => {
-      this.user = u;
-      this.userStr = this.user? this.user.first_name : '';
-      this.is_authenticated = this.user !== null
-    }))
+    this._auth.loggedUserListener().subscribe((res) => {
+      if (res) {
+        this.loggedUser = res;
+        // console.log(this.loggedUser)
+        this.is_authenticated = this.loggedUser !== null
+        this.userStr = this.loggedUser? this.loggedUser.user.email : '';
+      }
 
+    });
     this.title = this._config.title;
     
     this._chatService.getAssistValue().subscribe((res) => {
@@ -169,7 +172,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       fileName = res;
     });
 
-    const token = this._oktaAuth.getAccessToken();
+    // const token = this.user? this.user.token: ''; //this._oktaAuth.getAccessToken();
+    const token = this.loggedUser.user.token;
     const requestData = {
       file: fileName,
       query: this.messages[this.messages.length - 1]?.message,
@@ -187,11 +191,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       body: JSON.stringify(requestData),
       onopen: async (response: any) => {
         that.output = '';
-        // if (
-        //   response.ok &&
-        //   response.headers.get('content-type') ===
-        //     'text/event-stream;charset=utf-8; charset=utf-8'
-        // )
         if (response.ok) {
           that.assist?.setResponse('');
         } else if (response.status == 401) {

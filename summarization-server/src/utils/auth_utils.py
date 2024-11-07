@@ -49,3 +49,6 @@ async def generate_jwt_token(payload, secret_key, expiration_time=3600):
     token = jwt.encode(payload, secret_key, algorithm='HS256')
 
     return token
+
+def jwt_decode(encoded_jwt, secret_key):
+    return jwt.decode(encoded_jwt, secret_key, algorithms=["HS256"])

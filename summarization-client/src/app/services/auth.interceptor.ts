@@ -16,6 +16,7 @@ import { ConfigService } from './config.service';
 export class AuthInterceptor implements HttpInterceptor {
     public authToken:any;
     public idToken:any;
+    loggedUser: any
 
     constructor(@Inject(OKTA_AUTH) private _oktaAuth: OktaAuth, private _auth:AuthService, private _config:ConfigService) {
     }
@@ -25,16 +26,19 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     private addAuthHeaderToAllowedOrigins(request: HttpRequest<any>): HttpRequest<any> {
-        if (this._config.authSchema == 'basic') {
-            return request
-        }
-        this.authToken = this._oktaAuth.getAccessToken()
-        this.idToken = this._oktaAuth.getIdToken()
-        return request.clone( { setHeaders: { 
-            'Authorization': `Bearer ${this.authToken}`,
-            'X-Authenticated-User': this.idToken } 
-        });    
-        return request
-    }
+        if (request.url.indexOf('login') == -1 || request.url.indexOf('register') == -1) {
+            console.log('intercept---', request.url);
 
+            this._auth.loggedUserListener().subscribe((res) => {
+                this.loggedUser = res
+                this.authToken = this.loggedUser.user.token;
+            });
+            return request.clone( { setHeaders: {
+                'Authorization': `Bearer ${this.authToken}`}
+                // 'X-Authenticated-User': this.idToken } 
+            }); 
+        } 
+        return request;
+    }
 }
+

@@ -5,7 +5,7 @@ from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun, AsyncCallbackManagerForLLMRun
 from langchain.schema import Document
 from langchain.chains import LLMChain
-import time
+import time, os
 from typing import List, Any, Optional
 from openai import OpenAI
 from llama_index.core.llms import (
@@ -23,6 +23,8 @@ from llama_index.embeddings.nvidia import NVIDIAEmbedding
 from src.config import logger
 from src.utils.env import _env
 from src.model.embedding import EmbeddingModel
+
+os.environ['CURL_CA_BUNDLE'] = ''
 
 llm_config = _env.get_llm_values()
 llm_client = OpenAI(api_key = llm_config['API_KEY'], base_url = llm_config['API_BASE'])
@@ -248,6 +250,9 @@ def call_stream(client,
 
 def get_rerank_model():
     reranker_config = _env.get_reranker_values()
+    if not reranker_config["RERANK_ENABLED"]:
+        return None
+
     model_name =  reranker_config["MODEL"]
     if model_name.startswith("nvidia"):
         re_ranker = NVIDIARerank(
@@ -258,7 +263,6 @@ def get_rerank_model():
             truncate="END",
         )
     else:
-        re_ranker = None
         re_ranker = SentenceTransformerRerank(
             model=reranker_config['MODEL'],
             top_n=reranker_config['RERANK_TOP_N'],

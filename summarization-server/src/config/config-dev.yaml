@@ -1,0 +1,60 @@
+okta:
+  OKTA_AUTH_URL: "https://broadcom.okta.com/oauth2/default"
+  OKTA_CLIENT_ID: "0oaumd93js4k17q8S2p7"
+  OKTA_ENDPOINTS: [ 'admin' ]
+summarization_model:
+  API_BASE: "https://llm.ai.broadcom.net/api/v1"
+  API_KEY: "26f136f3-4012-425b-88b4-ae4ce0f4a92d"
+  MAX_COMPLETION: 700
+  BATCH_SIZE: 1
+  MODELS_JSON: "src/config/models.json"
+qa_model:
+  API_BASE: "https://llm.ai.broadcom.net/api/v1"
+  API_KEY: "26f136f3-4012-425b-88b4-ae4ce0f4a92d"
+  MODEL: "mistralai/Mixtral-8x7B-Instruct-v0.1"
+  MAX_TOKEN: 1024
+  MAX_COMPLETION: 700
+  SIMIL_TOP_K: 10 # Retrieve TOP_K most similar docs from the PGVector store
+  CHUNK_SIZE: 512
+  CHUNK_OVERLAP: 20
+  NUM_QUERIES: 3
+embedder:
+  API_BASE: "https://llm.ai.broadcom.net/api/v1"
+  API_KEY: "26f136f3-4012-425b-88b4-ae4ce0f4a92d"
+  MODEL: "BAAI/bge-en-icl"
+  VECTOR_DIM: 4096
+  BATCH_SIZE: 1
+reranker:
+  RERANK_ENABLED: False
+  API_BASE: "API_BASE"
+  API_KEY: NONE
+  MODEL: "BAAI/bge-reranker-large" # re-ranking model
+  RERANK_TOP_N: 5 # Rerank and pick the 5 most similar docs
+database:
+  PG_HOST: "localhost"
+  PG_PORT: 5432
+  PG_USER: "demouser"
+  PG_PASSWD: "demopasswd"
+  PG_DATABASE: "postgres"
+  PG_TABLE: "embeddings"
+  PG_VECTOR_DIM: 1024
+server:
+  HOST: "0.0.0.0"
+  PORT: 5000
+  NUM_WORKERS: 4
+  PDF_READER: pypdf # default PDF parser
+  FILE_PATH: "/Users/juli/ws/oss/summarize-and-chat/data"
+  RELOAD: False
+  VECTOR_DB: pgvector
+  AUTH: basic # basic okta
+  SECRET_KEY: "secret key for JWT"
+stt:
+  STT_API: "http://localhost:9000/api/v1" # "https://stt-svc-dev.leo.decc.vmware.com/api/v1"
+  AUTH_KEY: "26f136f3-4012-425b-88b4-ae4ce0f4a92d"
+email:
+  SMTP_SERVER: "smtp.vmware.com"
+  SENDER: "instaml@vmware.com"
+  SUMMARIZER_URL: "https://summarization.esp-dev.eng.vmware.com"
+  
+
+

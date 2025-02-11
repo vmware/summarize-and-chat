@@ -7,5 +7,7 @@ export const environment: Environment = {
   ssoIssuer: "okta_sso_issuer", /* Okta SSO issuer */
   ssoClientId: 'okta_client_id', /* Okta  client id */
   redirectUrl:'http://localhost:4200/login/callback', /* URL to redirect after SSO login */
-  contactUs: 'contact_us_link' /* Contact us URL */
+  contactUs: 'contact_us_link', /* Contact us URL */
+  authSchema: 'okta', /* okta, basic */
+  sessionKey: 'app-session', // All token and user info is saved after this key name in local storage
 };

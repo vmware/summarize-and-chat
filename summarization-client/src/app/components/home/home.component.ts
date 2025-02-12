@@ -25,6 +25,6 @@ export class HomeComponent implements OnInit {
   }
 
   public async login() : Promise<void> {
-    await this._auth.signIn()
+    // await this._auth.signIn()
   }
 }

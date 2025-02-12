@@ -23,8 +23,8 @@ import { SummarizeService } from 'src/app/services/summarize.service';
 import { Model, UploadObj } from 'src/app/models/model';
 import { IAppState,  getModels } from 'src/app/store/reducer';
 
-import { OKTA_AUTH } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+// import { OKTA_AUTH } from '@okta/okta-angular';
+// import { OktaAuth } from '@okta/okta-auth-js';
 
 @Component({
   selector: 'app-chat-doc',
@@ -112,7 +112,7 @@ export class SummarizeDocComponent implements OnInit {
   loggedUser: any;
 
   constructor(
-    @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth,
+    // @Inject(OKTA_AUTH) private _oktaAuth: OktaAuth,
     private _store: Store<IAppState>,
     private el: ElementRef,
     private _clipboardService: ClipboardService,

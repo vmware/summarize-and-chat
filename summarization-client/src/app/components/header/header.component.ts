@@ -127,18 +127,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public async login(payload?: any) : Promise<void> {
     console.log('login');
-    if (this._config.authSchema == 'okta') {
-      console.log('okta');
-      await this._auth.signIn()
-    } else {
-      console.log('basic');
-      this.router.navigateByUrl('/login/basic');
+
+    this.router.navigateByUrl('/login/basic');
       // this._auth.basicAuthSignIn(payload)
-    }
+    
   }
 
   public async logout(): Promise<void> {
-    await this._auth.signOut()
+    // await this._auth.signOut()
   }
 
   getRandomQuestions(array: any, count: number): string[] {

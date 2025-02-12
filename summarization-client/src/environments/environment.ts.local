@@ -1,0 +1,13 @@
+import { Environment } from 'src/app/models/env';
+
+export const environment: Environment = {
+  production: false,
+  title: 'Summarizer', /* Title of the application */
+  serviceUrl: 'http://localhost:8000', /* URL of the summarization-server URL */
+  ssoIssuer: "https://broadcom.okta.com/oauth2/default", /* Okta SSO issuer */
+  ssoClientId: '0oaumd93js4k17q8S2p7', /* Okta  client id */
+  redirectUrl:'http://localhost:4200/login/callback', /* URL to redirect after SSO login */
+  contactUs: 'contact_us_link', /* Contact us URL */
+  authSchema: 'okta', /* okta, basic */
+  sessionKey: 'app-session', // All token and user info is saved after this key name in local storage
+};

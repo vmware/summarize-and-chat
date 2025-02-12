@@ -38,11 +38,11 @@ export class AuthService {
     private location: Location,
     private _config:ConfigService) { 
       this.serverurl = `${this._config.apiServerUrl}/api/v1`;
-    
-    const status: SessionStatus = this.loggedUser() ? SessionStatus.AUTHENTICATED : SessionStatus.NOT_AUTHENTICATED;
-    this.sessionLifetimeSubject = new BehaviorSubject<SessionStatus>(status);
-    window.addEventListener('storage', this.storageEventListener.bind(this));
-    this.userSubject = new BehaviorSubject<AuthUser>(this.loggedUser());
+      
+      const status: SessionStatus = this.loggedUser() ? SessionStatus.AUTHENTICATED : SessionStatus.NOT_AUTHENTICATED;
+      this.sessionLifetimeSubject = new BehaviorSubject<SessionStatus>(status);
+      window.addEventListener('storage', this.storageEventListener.bind(this));
+      this.userSubject = new BehaviorSubject<AuthUser>(this.loggedUser());
   }
 
   public register(payload: any): Observable<any> {
@@ -58,10 +58,10 @@ export class AuthService {
   //   await this._oktaAuth.signInWithRedirect();
   // }
 
-  // public async signOut(): Promise<void> {
-  //   await this._oktaAuth.signOut();
-  //   this._store.dispatch(AuthActions.setUser({ user: undefined}))
-  // }
+  public async signOut(): Promise<void> {
+    // await this._oktaAuth.signOut();
+    // this._store.dispatch(AuthActions.setUser({ user: undefined}))
+  }
 
   public logout() : void {
     this.clearSession()

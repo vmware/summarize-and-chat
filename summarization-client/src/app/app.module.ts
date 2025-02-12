@@ -27,17 +27,17 @@ import { BasicLoginComponent } from './components/login/basic-login/basic-login.
 
 import { StoreModule } from '@ngrx/store';
 
-import { OktaAuthModule } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
+// import { OktaAuthModule } from '@okta/okta-angular';
+// import { OktaAuth } from '@okta/okta-auth-js';
 import { environment } from 'src/environments/environment';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { appReducers } from './store/reducer';
 
-export const oktaAuth = new OktaAuth({
-  issuer: environment.ssoIssuer,
-  clientId: environment.ssoClientId,
-  redirectUri: environment.redirectUrl
-})
+// export const oktaAuth = new OktaAuth({
+//   issuer: environment.ssoIssuer,
+//   clientId: environment.ssoClientId,
+//   redirectUri: environment.redirectUrl
+// })
 
 @NgModule({
   declarations: [
@@ -59,7 +59,7 @@ export const oktaAuth = new OktaAuth({
     ChatModule,
     BrowserAnimationsModule,
     StoreModule.forRoot(appReducers),
-    OktaAuthModule.forRoot({ oktaAuth })
+    // OktaAuthModule.forRoot({ oktaAuth })
   ],
 
   providers: [

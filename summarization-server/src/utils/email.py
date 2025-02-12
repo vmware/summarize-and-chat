@@ -11,18 +11,19 @@ from src.utils.env import _env
 config = _env.get_email_values()
 
 def send_email(subject, htmlTemplate, to):
-    s = smtplib.SMTP(config['SMTP_SERVER'])
-    message = MIMEText(htmlTemplate, "html")
-    message['From'] = config['SENDER']
-    message['To'] = to
-    message['Subject'] = subject
-    try:
-        # s.login("svc.instaml", "cxYt4P34dx!9^F^.@LB")
-        s.sendmail(message['From'], message['To'], message.as_string())
-        s.quit()
-        return None
-    except smtplib.SMTPRecipientsRefused:
-        return "Error: sendmail recipient refused"
+    return None
+    # s = smtplib.SMTP(config['SMTP_SERVER'])
+    # message = MIMEText(htmlTemplate, "html")
+    # message['From'] = config['SENDER']
+    # message['To'] = to
+    # message['Subject'] = subject
+    # try:
+    #     # s.login("svc.instaml", "cxYt4P34dx!9^F^.@LB")
+    #     s.sendmail(message['From'], message['To'], message.as_string())
+    #     s.quit()
+    #     return None
+    # except smtplib.SMTPRecipientsRefused:
+    #     return "Error: sendmail recipient refused"
 
 
 def notify_vtt_finished(user, audio):

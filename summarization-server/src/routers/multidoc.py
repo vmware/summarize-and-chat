@@ -3,6 +3,7 @@
 
 from fastapi import APIRouter, Depends
 from pathlib import Path
+from werkzeug.utils import secure_filename
 
 from src.services.auth import verify_token, ErrorResponse
 from src.services.analyzes import multi_document_analyze
@@ -18,7 +19,8 @@ async def multi_document(data: Multi, token=Depends(verify_token)):
     filetype = []
     config = _env.get_server_values()
     for f in data.file:
-        doc_path = Path(f"{config['FILE_PATH']}/{token.username}/{f}")
+        filename = secure_filename(f)
+        doc_path = Path(f"{config['FILE_PATH']}/{token.username}/{filename}")
         if not doc_path.exists():
             return ErrorResponse(f'please upload your {f} first!', 400)
         else:

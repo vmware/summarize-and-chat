@@ -68,7 +68,6 @@ async def upload(doc: UploadFile,
                 "user": email,
                 "env": _env.get_env()
             }
-            logger.info(f'--headers---{headers}')
             logger.info(f'---data--{data}')
             response = requests.post(f"{stt_config['STT_API']}/convert/audio/vtt", json=data, headers=headers)
             logger.info(response)

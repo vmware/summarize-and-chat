@@ -109,7 +109,7 @@ class environment:
     def get_server_values(self, refresh=False):
         server = self.get_config('server', refresh=refresh)
         if server:
-            return self.get_children(server, ["HOST", "PORT", "RELOAD", "NUM_WORKERS", "PDF_READER", "FILE_PATH", "JWT_SECRET_KEY"])
+            return self.get_children(server, ["HOST", "PORT", "RELOAD", "NUM_WORKERS", "PDF_READER", "FILE_PATH", "JWT_SECRET_KEY", "API_KEY"])
     
     def get_email_values(self, refresh=False):
         email = self.get_config('email', refresh=refresh)

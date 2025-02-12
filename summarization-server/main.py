@@ -17,6 +17,7 @@ from src.routers.convert import router as convert_router
 from src.routers.metadata import router as meta_router
 from src.routers.multidoc import router as multi_router
 from src.routers.model import router as model_router
+from src.routers.apis import router as api_router
 from src.routers.basic_auth import router as user_router
 
 app = FastAPI()
@@ -41,6 +42,7 @@ app.include_router(meta_router)
 app.include_router(multi_router)
 app.include_router(model_router)
 app.include_router(user_router)
+app.include_router(api_router)
 
 if __name__ == '__main__':
     server_config = _env.get_server_values()

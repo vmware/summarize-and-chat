@@ -89,6 +89,7 @@ class Content(BaseModel):
     chunk_overlap: int = Field(default=100, ge=100, le=300)
     chunk_prompt: Optional[str] = None
     final_prompt: Optional[str] = None
+    streaming: bool = Field(default=False)
 
 
 class Multi(BaseModel):

@@ -17,6 +17,7 @@ import jwt
 
 server_config = _env.get_server_values()
 secret_key = server_config['JWT_SECRET_KEY']
+api_key = server_config['API_KEY']
 
 config = _env.get_okta_values()
 pg_config = _env.get_db_values()
@@ -27,30 +28,6 @@ def ErrorResponse(err: str, code=200):
     logger.error("Error: {}".format(err))
     resp = {'status': code, 'message': err}
     return JSONResponse(resp, status_code=code)
-
-# Okta
-#
-# Define the auth scheme and access token URL
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
-# async def okta_token_validate(token):
-#     OKTA_AUDIENCE="api://default"
-#     ISSUER = config["OKTA_AUTH_URL"]
-#     CLIENT_ID = config["OKTA_CLIENT_ID"]
-#     try:
-#         res = validate_locally(
-#             token,
-#             ISSUER,
-#             OKTA_AUDIENCE,
-#             CLIENT_ID
-#         )
-#         email = res.get('sub_email', "") if res else None
-#         user = AuthenticatedUser
-#         user.username = email
-#         user.access_token = token
-#         user.exp = res.get('exp', 0)
-#         return user
-#     except Exception:
-#         raise HTTPException(status_code=401)
 
 def get_token(request: Request):
     auth_header = request.headers.get('Authorization')
@@ -71,6 +48,15 @@ async def verify_token(token: str = Depends(get_token)):
         print(e)
         raise HTTPException(401, 'unAuthed', {"Authenticate": f"Bearer {token}"})
     return token
+
+async def verify_api_key(key: str):
+    print('key=',key)
+    if api_key is None:
+        return True
+    if key is None or key == '' or key != api_key:
+        raise HTTPException(401, 'unAuthed', {"Authenticate": f"Bearer {key}"})
+        
+    return True
 
 async def basic_auth(email: str, password: str):
     if not email or not password:

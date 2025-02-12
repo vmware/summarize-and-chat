@@ -131,8 +131,8 @@ export class SummarizeDocComponent implements OnInit {
 
     this._auth.loggedUserListener().subscribe((res) => {
       this.loggedUser = res;
-      this.username = this.loggedUser.user.email
-      console.log(this.username)
+      if (this.loggedUser && this.loggedUser.user && this.loggedUser.user.email) 
+        this.username = this.loggedUser.user.email
     });
 
     this.uploadInfoSubscription =

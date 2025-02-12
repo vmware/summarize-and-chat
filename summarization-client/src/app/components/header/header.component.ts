@@ -126,15 +126,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public async login(payload?: any) : Promise<void> {
-    console.log('login');
-
     this.router.navigateByUrl('/login/basic');
       // this._auth.basicAuthSignIn(payload)
     
   }
 
   public async logout(): Promise<void> {
-    // await this._auth.signOut()
+    this.loggedUser = null;
+    this._auth.logout()
+    this.router.navigateByUrl('/home');
   }
 
   getRandomQuestions(array: any, count: number): string[] {

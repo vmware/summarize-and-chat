@@ -58,10 +58,10 @@ export class AuthService {
   //   await this._oktaAuth.signInWithRedirect();
   // }
 
-  public async signOut(): Promise<void> {
-    // await this._oktaAuth.signOut();
-    // this._store.dispatch(AuthActions.setUser({ user: undefined}))
-  }
+  // public async signOut(): Promise<void> {
+  //   await this._oktaAuth.signOut();
+  //   this._store.dispatch(AuthActions.setUser({ user: undefined}))
+  // }
 
   public logout() : void {
     this.clearSession()
@@ -98,12 +98,15 @@ export class AuthService {
   }
 
   public addUserToStorage(user: any) {
+    console.log('add to storage')
     localStorage.setItem(this._config.sessionKey, JSON.stringify(user));
     this.userSubject.next(user)
+    console.log(this.userSubject)
   }
 
   public clearSession(): void {
-    this.userSubject.next(null);
+    // if (this.userSubject)
+    //   this.userSubject.next(null);
     localStorage.removeItem(this._config.sessionKey);
   }
 

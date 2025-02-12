@@ -5,7 +5,7 @@ sentencepiece==0.1.99
 aioredis==2.0.1
 openai==1.42.0 #1.7.2
 pandas==1.3.5
-python-multipart==0.0.18
+python-multipart==0.0.20
 unstructured==0.14.3
 python-docx==0.8.11
 pypdf==4.0.2
@@ -31,7 +31,7 @@ llama-index-embeddings-openai==0.2.3
 multiprocess==0.70.16
 pydub==0.25.1
 python-pptx==0.6.23
-Werkzeug==3.0.6
+Werkzeug==3.1.3
 docx2txt==0.8
 rank-bm25==0.2.2
 okta_jwt==1.3.5
